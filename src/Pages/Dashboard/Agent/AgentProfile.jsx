@@ -2,7 +2,7 @@ import React from 'react';
 import useAuth from '../../../hooks/useAuth';
 
 const AgentProfile = () => {
-  const { user } = useAuth;
+  const { user } = useAuth(); // ✅ useAuth() CALL করা হয়েছে এখানে
 
   return (
     <div className="min-h-[calc(100vh-100px)] flex justify-center items-center bg-gray-50">
@@ -14,13 +14,12 @@ const AgentProfile = () => {
         />
         <h2 className="text-2xl font-bold mb-2">{user?.displayName || 'Agent'}</h2>
         <p className="text-gray-600 mb-1">Email: {user?.email}</p>
-        
-        {/* Show role only if not 'user' */}
+
+        {/* Role দেখাবে যদি user না হয় */}
         {user?.role !== 'user' && (
           <p className="text-blue-600 font-semibold">Role: {user.role}</p>
         )}
 
-        {/* You can add more agent-specific info here */}
         <div className="mt-4">
           <p className="text-sm text-gray-500">Welcome to your dashboard, agent!</p>
         </div>
