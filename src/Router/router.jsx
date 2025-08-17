@@ -1,6 +1,4 @@
-import {
-  createBrowserRouter,
-} from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import Home from './../Pages/Home/Home/Home';
 import RootLayouts from "../Layouts/RootLayouts";
 import AuthLayout from "../Layouts/AuthLayout";
@@ -20,16 +18,12 @@ import AdminProfile from './../Pages/Dashboard/Admin/AdminProfile';
 import ManageUsers from './../Pages/Dashboard/Admin/ManageUsers';
 import ManageProperties from './../Pages/Dashboard/Admin/ManageProperties';
 import ManageReviews from './../Pages/Dashboard/Admin/ManageReviews';
+import AdvertiseProperty from "../Pages/Dashboard/Admin/AdvertiseProperty";
+import AllProperties from "../Pages/AllProperty/AllProperties";
+import PropertyDetails from "../Pages/AllProperty/propertyDetails";
+import MakeOffer from "../Pages/Dashboard/User/MakeOffer"; // ✅ Ensure this file exists
+
 import PrivateRoute from './../Routes/PrivateRoute';
-
-
-// User Dashboard Pages
-
-
-// Agent Dashboard Pages
-
-// Admin Dashboard Pages
-
 
 export const router = createBrowserRouter([
   {
@@ -39,88 +33,108 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Home
+      },
+      {
+        path: "all-properties",
+        Component: AllProperties
+      },
+      {
+        path: "property-details/:id",
+        Component: PropertyDetails
+      },
+      {
+        path: "make-offer/:id",
+        element: (
+          <PrivateRoute>
+            <MakeOffer />
+          </PrivateRoute>
+        )
       }
     ]
   },
   {
-    path: '/',
+    path: "/",
     Component: AuthLayout,
     children: [
       {
-        path: 'login',
+        path: "login",
         Component: Login
       },
       {
-        path: 'register',
+        path: "register",
         Component: Register
       }
     ]
   },
   {
-    path: '/dashboard',
-    element: <PrivateRoute>
-       <DashboardLayout></DashboardLayout>
-      </PrivateRoute>,
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
     children: [
-      { 
-        path: 'user/profile', 
+      // ✅ User Routes
+      {
+        path: "user/profile",
         Component: MyProfile
       },
-      { 
-        path: 'user/wishlist', 
+      {
+        path: "user/wishlist",
         Component: Wishlist
       },
-      { 
-        path: 'user/property-bought', 
-        Component: PropertyBought 
+      {
+        path: "user/property-bought",
+        Component: PropertyBought
       },
-      { 
-        path: 'user/my-reviews', 
+      {
+        path: "user/my-reviews",
         Component: MyReviews
       },
 
-      { 
-        path: 'agent/profile', 
+      // ✅ Agent Routes
+      {
+        path: "agent/profile",
         Component: AgentProfile
       },
-      { 
-        path: 'agent/add-property', 
-        Component: AddProperty 
+      {
+        path: "agent/add-property",
+        Component: AddProperty
       },
-      { 
-        path: 'agent/my-properties', 
+      {
+        path: "agent/my-properties",
         Component: MyProperties
       },
-      { 
-        path:'agent/sold-properties', 
+      {
+        path: "agent/sold-properties",
         Component: MySoldProperties
       },
-      { 
-        path:'agent/requests', 
+      {
+        path: "agent/requests",
         Component: RequestedProperties
       },
 
-          // Admin routes
-      { 
-        path:'admin/profile', 
+      // ✅ Admin Routes
+      {
+        path: "admin/profile",
         Component: AdminProfile
       },
-      { 
-        path:'admin/manage-users',
+      {
+        path: "admin/manage-users",
         Component: ManageUsers
       },
-      { 
-        path: 'admin/manage-properties', 
-        Component: ManageProperties 
+      {
+        path: "admin/manage-properties",
+        Component: ManageProperties
       },
-      { 
-        path: 'admin/manage-reviews', 
+      {
+        path: "admin/manage-reviews",
         Component: ManageReviews
       },
-      // { 
-      //   path: 'admin/advertise', 
-      //   Component: AdvertiseProperty 
-      // },
+      {
+        path: "admin/advertise",
+        Component: AdvertiseProperty
+      }
     ]
   }
 ]);

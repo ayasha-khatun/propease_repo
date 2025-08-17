@@ -18,12 +18,9 @@ const MyProfile = () => {
 
         <h3 className="text-xl font-semibold text-gray-800">{user?.displayName || 'N/A'}</h3>
         <p className="text-gray-600">{user?.email}</p>
-
-        {user?.role && user.role !== 'user' && (
-          <p className="mt-2 px-4 py-1 text-sm text-white bg-blue-600 rounded-full">
-            Role: {user.role}
-          </p>
-        )}
+        <div>
+          <p className="text-sm text-gray-500">Welcome to your dashboard, user!</p>
+        </div>
       </div>
     </div>
   );

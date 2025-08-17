@@ -15,12 +15,7 @@ const AgentProfile = () => {
         <h2 className="text-2xl font-bold mb-2">{user?.displayName || 'Agent'}</h2>
         <p className="text-gray-600 mb-1">Email: {user?.email}</p>
 
-        {/* Role দেখাবে যদি user না হয় */}
-        {user?.role !== 'user' && (
-          <p className="text-blue-600 font-semibold">Role: {user.role}</p>
-        )}
-
-        <div className="mt-4">
+        <div>
           <p className="text-sm text-gray-500">Welcome to your dashboard, agent!</p>
         </div>
       </div>

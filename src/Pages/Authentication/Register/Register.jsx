@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { updateProfile } from 'firebase/auth';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import useAuth from '../../../hooks/useAuth';
@@ -19,7 +20,7 @@ const Register = () => {
     const password = form.password.value;
     const photo = form.photo.value;
 
-    // ✅ Password Validation
+    // ✅ Validate password
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/;
     if (!passwordRegex.test(password)) {
       setError('Password must have 6+ characters, one uppercase, and one special character.');
@@ -27,19 +28,25 @@ const Register = () => {
     }
 
     try {
-      // ✅ Create user with Firebase
+      // ✅ Create user in Firebase
       const result = await createUser(email, password);
       const loggedUser = result.user;
 
-      // ✅ Save user to database
+      // ✅ Update Firebase displayName and photoURL
+      await updateProfile(loggedUser, {
+        displayName: name,
+        photoURL: photo
+      });
+
+      // ✅ Save to MongoDB
       const userData = { name, email, photo, role: 'user' };
       await axios.put(`http://localhost:5000/users/${email}`, userData);
 
-      // ✅ Get JWT token
-      const tokenResponse = await axios.post('http://localhost:5000/jwt', { email });
-      localStorage.setItem('access-token', tokenResponse.data.token);
+      // ✅ Get JWT Token
+      const tokenRes = await axios.post('http://localhost:5000/jwt', { email });
+      localStorage.setItem('access-token', tokenRes.data.token);
 
-      // ✅ Show success alert
+      // ✅ Show Success
       Swal.fire({
         icon: 'success',
         title: 'Registration Successful',
@@ -47,13 +54,14 @@ const Register = () => {
         confirmButtonColor: '#3085d6'
       });
 
+      // ✅ Redirect to home
       navigate('/');
     } catch (err) {
-      console.error(err);
+      console.error('Registration error:', err);
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
-        text: err.message,
+        text: err.message || 'Something went wrong!',
       });
     }
   };
@@ -62,10 +70,9 @@ const Register = () => {
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow bg-white">
       <h2 className="text-2xl font-bold mb-4 text-center">Create Account</h2>
       <form onSubmit={handleRegister} className="space-y-4">
-        
         {/* Name */}
         <div>
-          <label className="block mb-1">Name</label>
+          <label className="block mb-1 font-medium">Name</label>
           <input
             type="text"
             name="name"
@@ -76,7 +83,7 @@ const Register = () => {
 
         {/* Email */}
         <div>
-          <label className="block mb-1">Email</label>
+          <label className="block mb-1 font-medium">Email</label>
           <input
             type="email"
             name="email"
@@ -87,7 +94,7 @@ const Register = () => {
 
         {/* Password */}
         <div>
-          <label className="block mb-1">Password</label>
+          <label className="block mb-1 font-medium">Password</label>
           <input
             type="password"
             name="password"
@@ -98,7 +105,7 @@ const Register = () => {
 
         {/* Photo URL */}
         <div>
-          <label className="block mb-1">Photo URL</label>
+          <label className="block mb-1 font-medium">Photo URL</label>
           <input
             type="text"
             name="photo"
@@ -107,17 +114,23 @@ const Register = () => {
           />
         </div>
 
-        {/* Error Message */}
+        {/* Error Display */}
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
-        {/* Register Button */}
-        <button type="submit" className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
           Register
         </button>
       </form>
 
       <p className="text-center text-sm mt-4">
-        Already have an account? <a href="/login" className="text-blue-600">Login</a>
+        Already have an account?{' '}
+        <a href="/login" className="text-blue-600 underline">
+          Login
+        </a>
       </p>
     </div>
   );

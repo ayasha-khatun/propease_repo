@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useAxiosSecure from '../hooks/useAxiosSecure';
 
@@ -8,54 +8,63 @@ const DashboardLayout = () => {
   const axiosSecure = useAxiosSecure();
   const [role, setRole] = useState(null);
 
-  // Fetch user role from backend
+  // ✅ Fetch user role from backend
   useEffect(() => {
-  if (user?.email) {
-    axiosSecure.get(`/users/role/${user.email}`)
-      .then(res => setRole(res.data.role))
-      .catch(err => {
-        console.error("Role fetch error:", err);
-        setRole(null); // fallback
-      });
-  }
-}, [user?.email, axiosSecure]);
+    const fetchRole = async () => {
+      if (user?.email) {
+        try {
+          const res = await axiosSecure.get(`/users/role/${user.email}`);
+          setRole(res.data?.role || 'user'); // fallback to 'user'
+        } catch (err) {
+          console.error("Role fetch error:", err);
+          setRole('user'); // fallback if error
+        }
+      }
+    };
 
-  const handleLogout = () => {
-    logout()
-      .then(() => console.log("Logged out"))
-      .catch(console.error);
+    fetchRole();
+  }, [user?.email, axiosSecure]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      console.log('Logged out');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
-        {/* Navbar for small devices */}
+        {/* Top Navbar (for mobile) */}
         <div className="w-full navbar bg-base-200 lg:hidden">
           <div className="flex-none">
             <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none"
-                   viewBox="0 0 24 24" stroke="currentColor">
+                viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                      d="M4 6h16M4 12h16M4 18h16"/>
+                  d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </label>
           </div>
           <div className="flex-1 px-2 mx-2 font-bold">Dashboard</div>
         </div>
 
-        {/* Main Content */}
+        {/* Main content */}
         <div className="p-4">
           <Outlet />
         </div>
       </div>
 
+      {/* Sidebar */}
       <div className="drawer-side">
         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
         <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
           <li className="mb-2 text-lg font-semibold">Dashboard Menu</li>
 
-          {/* ✅ User Role Routes */}
+          {/* Dynamic Role-based Routes */}
           {role === 'user' && (
             <>
               <li><NavLink to="/dashboard/user/profile">My Profile</NavLink></li>
@@ -65,7 +74,6 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {/* ✅ Agent Role Routes */}
           {role === 'agent' && (
             <>
               <li><NavLink to="/dashboard/agent/profile">Agent Profile</NavLink></li>
@@ -76,7 +84,6 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {/* ✅ Admin Role Routes */}
           {role === 'admin' && (
             <>
               <li><NavLink to="/dashboard/admin/profile">Admin Profile</NavLink></li>

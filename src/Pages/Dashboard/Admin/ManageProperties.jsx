@@ -1,21 +1,19 @@
-import React, { useEffect, useState} from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import useAuth from '../../../hooks/useAuth';
+import useAxiosSecure from './../../../hooks/useAxiosSecure';
 
 const ManageProperties = () => {
-  const { user } = useAuth;
   const [properties, setProperties] = useState([]);
+  const [disabledIds, setDisabledIds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
 
-  // Fetch all properties added by agents
   const fetchProperties = async () => {
     try {
-      setLoading(true);
-      const res = await axios.get('http://localhost:5000/admin/properties'); // Adjust endpoint as needed
+      const res = await axiosSecure.get('/admin/properties');
       setProperties(res.data);
-    } catch (error) {
-      console.error('Failed to fetch properties:', error);
+    } catch (err) {
+      console.error('Failed to load properties', err);
       Swal.fire('Error', 'Failed to load properties', 'error');
     } finally {
       setLoading(false);
@@ -26,93 +24,116 @@ const ManageProperties = () => {
     fetchProperties();
   }, []);
 
-  // Verify a property
-  const handleVerify = async (propertyId) => {
+  const disableTemporarily = (id) => {
+    setDisabledIds((prev) => [...new Set([...prev, id])]);
+  };
+
+  const handleVerify = async (id) => {
+    disableTemporarily(id);
     try {
-      const res = await axios.patch(`http://localhost:5000/admin/properties/${propertyId}/verify`);
-      if (res.data.modifiedCount > 0) {
+      const res = await axiosSecure.patch(`/admin/properties/${id}/verify`);
+      if (res.data?.modifiedCount > 0) {
         Swal.fire('Verified!', 'Property has been verified.', 'success');
         fetchProperties();
+      } else {
+        Swal.fire('No Change', 'No update made to the property.', 'info');
       }
-    } catch (error) {
-      console.error('Verify error:', error);
-      Swal.fire('Error', 'Failed to verify property', 'error');
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Verification failed.', 'error');
     }
   };
 
-  // Reject a property
-  const handleReject = async (propertyId) => {
+  const handleReject = async (id) => {
+    disableTemporarily(id);
     try {
-      const res = await axios.patch(`http://localhost:5000/admin/properties/${propertyId}/reject`);
-      if (res.data.modifiedCount > 0) {
+      const res = await axiosSecure.patch(`/admin/properties/${id}/reject`);
+      if (res.data?.modifiedCount > 0) {
         Swal.fire('Rejected!', 'Property has been rejected.', 'success');
         fetchProperties();
+      } else {
+        Swal.fire('No Change', 'No update made to the property.', 'info');
       }
-    } catch (error) {
-      console.error('Reject error:', error);
-      Swal.fire('Error', 'Failed to reject property', 'error');
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Rejection failed.', 'error');
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Loading properties...</p>;
+  if (loading) {
+    return (
+      <div className="p-4 text-center">
+        <span className="loading loading-spinner text-primary"></span>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Manage Properties</h1>
-      {properties.length === 0 ? (
-        <p>No properties found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-4 py-2">Title</th>
-                <th className="border px-4 py-2">Location</th>
-                <th className="border px-4 py-2">Agent Name</th>
-                <th className="border px-4 py-2">Agent Email</th>
-                <th className="border px-4 py-2">Price Range</th>
-                <th className="border px-4 py-2">Status</th>
-                <th className="border px-4 py-2">Actions</th>
+    <div className="overflow-x-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Manage Properties</h2>
+
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Agent</th>
+            <th>Email</th>
+            <th>Price Range</th>
+            <th>Verify</th>
+            <th>Reject</th>
+          </tr>
+        </thead>
+        <tbody>
+          {properties.map((p, idx) => {
+            const isDisabled = disabledIds.includes(p._id);
+            const isVerified = p.verificationStatus === 'verified';
+            const isRejected = p.verificationStatus === 'rejected';
+
+            return (
+              <tr key={p._id || idx}>
+                <td>{idx + 1}</td>
+                <td>{p.title}</td>
+                <td>{p.location}</td>
+                <td>{p.agentName || 'N/A'}</td>
+                <td>{p.agentEmail || 'N/A'}</td>
+                <td>{p.priceRange}</td>
+                <td>
+                  {isVerified ? (
+                    <span className="text-green-600 font-semibold">Verified</span>
+                  ) : isRejected ? (
+                    <button className="btn btn-xs btn-disabled">Verify</button>
+                  ) : (
+                    <button
+                      className="btn btn-xs btn-success"
+                      onClick={() => handleVerify(p._id)}
+                      disabled={isDisabled}
+                    >
+                      Verify
+                    </button>
+                  )}
+                </td>
+                <td>
+                  {isRejected ? (
+                    <span className="text-red-500 font-semibold">Rejected</span>
+                  ) : isVerified ? (
+                    <button className="btn btn-xs btn-disabled">Reject</button>
+                  ) : (
+                    <button
+                      className="btn btn-xs btn-error"
+                      onClick={() => handleReject(p._id)}
+                      disabled={isDisabled}
+                    >
+                      Reject
+                    </button>
+                  )}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {properties.map((property) => (
-                <tr key={property._id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">{property.title}</td>
-                  <td className="border px-4 py-2">{property.location}</td>
-                  <td className="border px-4 py-2">{property.agentName}</td>
-                  <td className="border px-4 py-2">{property.agentEmail}</td>
-                  <td className="border px-4 py-2">{property.priceRange}</td>
-                  <td className="border px-4 py-2 font-semibold">
-                    {property.verificationStatus || 'pending'}
-                  </td>
-                  <td className="border px-4 py-2 space-x-2">
-                    {property.verificationStatus === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleVerify(property._id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                        >
-                          Verify
-                        </button>
-                        <button
-                          onClick={() => handleReject(property._id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                    {(property.verificationStatus === 'verified' || property.verificationStatus === 'rejected') && (
-                      <span className="capitalize">{property.verificationStatus}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

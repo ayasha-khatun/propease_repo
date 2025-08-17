@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
+import useAxiosSecure from './../../../hooks/useAxiosSecure';
 
 const ManageReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
 
-  // Fetch all reviews from backend
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/admin/reviews'); // Adjust endpoint
+      const res = await axiosSecure.get('/admin/reviews');
       setReviews(res.data);
     } catch (error) {
       console.error('Failed to fetch reviews:', error);
@@ -24,25 +24,24 @@ const ManageReviews = () => {
     fetchReviews();
   }, []);
 
-  // Delete a review
-  const handleDelete = async (reviewId) => {
-    const confirmResult = await Swal.fire({
+  const handleDelete = async (reviewId, reviewerEmail) => {
+    const confirm = await Swal.fire({
       title: 'Are you sure?',
-      text: "This will delete the review permanently!",
+      text: 'This will permanently delete the review.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
     });
 
-    if (confirmResult.isConfirmed) {
+    if (confirm.isConfirmed) {
       try {
-        const res = await axios.delete(`http://localhost:5000/admin/reviews/${reviewId}`);
-        if (res.data.deletedCount > 0) {
-          Swal.fire('Deleted!', 'Review has been deleted.', 'success');
-          setReviews(reviews.filter((review) => review._id !== reviewId));
+        const res = await axiosSecure.delete(`/admin/reviews/${reviewId}?email=${reviewerEmail}`);
+        if (res.data.deletedFromReviews?.deletedCount > 0) {
+          Swal.fire('Deleted!', 'Review has been removed.', 'success');
+          setReviews((prev) => prev.filter((r) => r._id !== reviewId));
         }
       } catch (error) {
-        console.error('Delete error:', error);
+        console.error(error);
         Swal.fire('Error', 'Failed to delete review', 'error');
       }
     }
@@ -53,6 +52,7 @@ const ManageReviews = () => {
   return (
     <div className="max-w-7xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Manage Reviews</h1>
+
       {reviews.length === 0 ? (
         <p>No reviews found.</p>
       ) : (
@@ -62,21 +62,26 @@ const ManageReviews = () => {
               <div className="flex items-center mb-3">
                 <img
                   src={review.reviewerImage || '/default-user.png'}
-                  alt={review.reviewerName}
+                  alt="Reviewer"
                   className="w-12 h-12 rounded-full mr-4 object-cover"
                 />
                 <div>
-                  <p className="font-semibold">{review.reviewerName}</p>
-                  <p className="text-sm text-gray-500">{review.reviewerEmail}</p>
+                  <p className="font-semibold">{review.reviewerName || 'Anonymous'}</p>
+                  <p className="text-sm text-gray-500">{review.reviewerEmail || 'N/A'}</p>
                 </div>
               </div>
-              <p className="mb-2 font-semibold">Property: {review.propertyTitle}</p>
-              <p className="mb-1 text-gray-600">{review.review}</p>
+
+              <p className="mb-2 font-semibold">🏠 Property: {review.propertyTitle || 'Untitled Property'}</p>
+              <p className="mb-1 text-gray-600">💬 {review.review || 'No review text.'}</p>
               <p className="text-xs text-gray-400">
-                Reviewed on: {new Date(review.reviewTime).toLocaleDateString()}
+                🕓 Reviewed on:{' '}
+                {review.reviewTime
+                  ? new Date(review.reviewTime).toLocaleDateString()
+                  : 'Unknown Date'}
               </p>
+
               <button
-                onClick={() => handleDelete(review._id)}
+                onClick={() => handleDelete(review._id, review.reviewerEmail)}
                 className="mt-3 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
               >
                 Delete Review

@@ -17,11 +17,9 @@ const AdminProfile = () => {
         <div className="text-center">
           <p className="text-lg font-semibold">Name: {user?.displayName}</p>
           <p className="text-md text-gray-600">Email: {user?.email}</p>
-          {user?.role !== 'user' && (
-            <p className="text-sm px-3 py-1 bg-green-200 text-green-800 rounded-full mt-2 inline-block">
-              Role: {user?.role}
-            </p>
-          )}
+          <div>
+          <p className="text-sm text-gray-500">Welcome to your dashboard, admin!</p>
+        </div>
         </div>
       </div>
     </div>
