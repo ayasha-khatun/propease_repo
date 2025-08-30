@@ -21,9 +21,9 @@ import ManageReviews from './../Pages/Dashboard/Admin/ManageReviews';
 import AdvertiseProperty from "../Pages/Dashboard/Admin/AdvertiseProperty";
 import AllProperties from "../Pages/AllProperty/AllProperties";
 import PropertyDetails from "../Pages/AllProperty/propertyDetails";
-import MakeOffer from "../Pages/Dashboard/User/MakeOffer"; // ✅ Ensure this file exists
 
 import PrivateRoute from './../Routes/PrivateRoute';
+import MakeOffer from './../Pages/Dashboard/User/MakeOffer';
 
 export const router = createBrowserRouter([
   {
@@ -42,14 +42,7 @@ export const router = createBrowserRouter([
         path: "property-details/:id",
         Component: PropertyDetails
       },
-      {
-        path: "make-offer/:id",
-        element: (
-          <PrivateRoute>
-            <MakeOffer />
-          </PrivateRoute>
-        )
-      }
+      
     ]
   },
   {
@@ -82,6 +75,10 @@ export const router = createBrowserRouter([
       {
         path: "user/wishlist",
         Component: Wishlist
+      },
+      {
+        path: "make-offer/:id",
+        Component: MakeOffer
       },
       {
         path: "user/property-bought",

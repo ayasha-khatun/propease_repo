@@ -1,31 +1,29 @@
 import { useEffect, useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Wishlist = () => {
   const { user } = useAuth();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // ✅ Replace with your real backend URL
-  const baseURL = "http://localhost:5000";
+  const axiosSecure = useAxiosSecure(); // 🔹 token সহ axios instance
 
   useEffect(() => {
     if (user?.email) {
-      axios
-        .get(`${baseURL}/wishlist?email=${user.email}`)
+      setLoading(true);
+      axiosSecure
+        .get(`/wishlist?email=${user.email}`)
         .then((res) => {
           setWishlist(res.data || []);
-          setLoading(false);
         })
         .catch((err) => {
           console.error("Error fetching wishlist:", err);
-          setLoading(false);
-        });
+        })
+        .finally(() => setLoading(false));
     }
-  }, [user?.email]);
+  }, [user?.email, axiosSecure]);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -36,8 +34,8 @@ const Wishlist = () => {
       confirmButtonText: "Yes, remove it",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`${baseURL}/wishlist/${id}`)
+        axiosSecure
+          .delete(`/wishlist/${id}`)
           .then((res) => {
             if (res.data.deletedCount > 0) {
               setWishlist((prev) => prev.filter((item) => item._id !== id));
@@ -83,7 +81,7 @@ const Wishlist = () => {
 
           <div className="flex gap-2 mt-4">
             <Link
-              to={`/dashboard/make-offer/${property.propertyId || property._id}`}
+             to={`/dashboard/make-offer/${property.propertyId}`}
               className="btn btn-sm btn-success flex-1"
             >
               Make Offer

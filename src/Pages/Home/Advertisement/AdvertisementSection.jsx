@@ -1,3 +1,4 @@
+// src/components/Home/AdvertisementSection.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -6,12 +7,12 @@ const AdvertisementSection = () => {
   const [ads, setAds] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/admin/verified-properties')
+    axios.get("http://localhost:5000/advertised-properties") // ✅ public route
       .then(res => {
         const firstFour = res.data.slice(0, 4);
         setAds(firstFour);
       })
-      .catch(err => console.error('Failed to load advertisements:', err));
+      .catch(err => console.error("Failed to load advertisements:", err));
   }, []);
 
   return (
@@ -38,10 +39,6 @@ const AdvertisementSection = () => {
                 <p className="text-sm text-gray-800 font-medium mb-2">
                   💰 {property.priceRange}
                 </p>
-                <p className="text-xs text-green-700 bg-green-100 inline-block px-2 py-0.5 rounded-full">
-                  ✔ {property.verificationStatus}
-                </p>
-
                 <Link
                   to={`/property-details/${property._id}`}
                   className="block mt-4 text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
