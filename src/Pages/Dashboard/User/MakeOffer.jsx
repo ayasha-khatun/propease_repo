@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-import useAuth from "../../../Hooks/useAuth";
+import useAuth from "../../../hooks/useAuth";
+import useRole from "../../../hooks/useRole";
 
 const MakeOffer = () => {
   const { id } = useParams(); // propertyId/_id
   const axiosSecure = useAxiosSecure();
-  const { user, role } = useAuth(); // ✅ function call
+  const { user } = useAuth();
+  const { role, loading } = useRole();
   const [property, setProperty] = useState(null);
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -27,6 +29,10 @@ const MakeOffer = () => {
 
   const handleOffer = async (e) => {
     e.preventDefault();
+
+    if (loading) {
+      return Swal.fire("Please wait", "Checking your role...", "info");
+    }
 
     if (role !== "user") {
       return Swal.fire("Permission Denied", "Only users can make an offer!", "error");
@@ -51,6 +57,7 @@ const MakeOffer = () => {
       propertyTitle: property?.title,
       propertyLocation: property?.location,
       agentName: property?.agentName,
+      agentEmail: property?.agentEmail,
       buyerName: user?.displayName,
       buyerEmail: user?.email,
       offerAmount: Number(amount),
@@ -84,9 +91,24 @@ const MakeOffer = () => {
     <div className="max-w-2xl mx-auto mt-10 bg-white p-6 shadow rounded">
       <h2 className="text-2xl font-semibold mb-6">Make an Offer</h2>
       <form onSubmit={handleOffer} className="space-y-4">
-        <input type="text" value={property.title} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
-        <input type="text" value={property.location} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
-        <input type="text" value={property.agentName} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
+        <input
+          type="text"
+          value={property.title}
+          readOnly
+          className="w-full border px-4 py-2 rounded bg-gray-100"
+        />
+        <input
+          type="text"
+          value={property.location}
+          readOnly
+          className="w-full border px-4 py-2 rounded bg-gray-100"
+        />
+        <input
+          type="text"
+          value={property.agentName}
+          readOnly
+          className="w-full border px-4 py-2 rounded bg-gray-100"
+        />
         <input
           type="number"
           placeholder={`Enter amount ($${property.minPrice} - $${property.maxPrice})`}
@@ -94,8 +116,18 @@ const MakeOffer = () => {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <input type="email" value={user?.email} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
-        <input type="text" value={user?.displayName} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
+        <input
+          type="email"
+          value={user?.email}
+          readOnly
+          className="w-full border px-4 py-2 rounded bg-gray-100"
+        />
+        <input
+          type="text"
+          value={user?.displayName}
+          readOnly
+          className="w-full border px-4 py-2 rounded bg-gray-100"
+        />
         <input
           type="date"
           value={date}
@@ -103,7 +135,10 @@ const MakeOffer = () => {
           className="w-full border px-4 py-2 rounded"
           required
         />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
           Submit Offer
         </button>
       </form>
