@@ -1,119 +1,129 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import useAuth from '../../../hooks/useAuth';
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../Hooks/useAuth";
 
 const RequestedProperties = () => {
-  const { user } = useAuth();
   const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+
+  // Fetch agent's requested/offered properties
+  const fetchOffers = async () => {
+    try {
+      const res = await axiosSecure.get(`/offers/agent/${user?.email}`);
+      setOffers(res.data);
+    } catch (err) {
+      console.error("Failed to load offers", err);
+      Swal.fire("Error", "Failed to load offers", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (user?.email) {
-      axios
-        .get(`http://localhost:5000/offers/agent/${user.email}`)
-        .then((res) => setOffers(res.data))
-        .catch((err) => console.error('Offer fetch error:', err));
+      fetchOffers();
     }
-  }, [user]);
+  }, [user?.email]);
 
-  const refetchOffers = async () => {
-    const res = await axios.get(`http://localhost:5000/offers/agent/${user.email}`);
-    setOffers(res.data);
-  };
-
+  // Handle Accept Offer
   const handleAccept = async (offerId, propertyId) => {
     try {
-      const res = await axios.patch(`http://localhost:5000/offer/accept/${offerId}`, { propertyId });
-      if (res.data.modifiedCount > 0 || res.data.statusUpdated) {
-        Swal.fire('Accepted!', 'The offer has been accepted.', 'success');
-        refetchOffers();
+      const res = await axiosSecure.patch(`/offers/${offerId}/accept`, {
+        propertyId,
+      });
+
+      if (res.data.modifiedCount > 0) {
+        Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
+        fetchOffers();
+      } else {
+        Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
       }
     } catch (err) {
-      console.error('Accept offer error:', err);
+      console.error("Accept error", err);
+      Swal.fire("❌ Error", "Failed to accept offer.", "error");
     }
   };
 
+  // Handle Reject Offer
   const handleReject = async (offerId) => {
     try {
-      const res = await axios.patch(`http://localhost:5000/offer/reject/${offerId}`);
+      const res = await axiosSecure.patch(`/offers/${offerId}/reject`);
       if (res.data.modifiedCount > 0) {
-        Swal.fire('Rejected!', 'The offer has been rejected.', 'info');
-        refetchOffers();
+        Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
+        fetchOffers();
+      } else {
+        Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
       }
     } catch (err) {
-      console.error('Reject offer error:', err);
+      console.error("Reject error", err);
+      Swal.fire("❌ Error", "Failed to reject offer.", "error");
     }
   };
 
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-center">Requested Properties</h2>
+  if (loading) {
+    return (
+      <div className="p-4 text-center">
+        <span className="loading loading-spinner text-primary"></span>
+      </div>
+    );
+  }
 
-      {offers.length === 0 ? (
-        <p className="text-center text-gray-500">No offers found.</p>
-      ) : (
-        <div className="overflow-x-auto shadow-lg rounded-lg">
-          <table className="table w-full">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Location</th>
-                <th>Buyer Name</th>
-                <th>Buyer Email</th>
-                <th>Offer Price</th>
-                <th>Status</th>
-                <th className="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {offers.map((offer, index) => (
-                <tr key={offer._id} className="hover">
-                  <td>{index + 1}</td>
-                  <td>{offer.title}</td>
-                  <td>{offer.location}</td>
-                  <td>{offer.buyerName}</td>
-                  <td>{offer.buyerEmail}</td>
-                  <td>${offer.offerAmount}</td>
-                  <td className="capitalize font-semibold">
-                    <span
-                      className={`px-2 py-1 rounded text-white ${
-                        offer.status === 'pending'
-                          ? 'bg-yellow-500'
-                          : offer.status === 'accepted'
-                          ? 'bg-green-600'
-                          : 'bg-red-600'
-                      }`}
+  return (
+    <div className="overflow-x-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Requested / Offered Properties</h2>
+
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Property Title</th>
+            <th>Location</th>
+            <th>Buyer Name</th>
+            <th>Buyer Email</th>
+            <th>Offer Price</th>
+            <th>Status / Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {offers.map((offer, idx) => (
+            <tr key={offer._id}>
+              <td>{idx + 1}</td>
+              <td>{offer.propertyTitle}</td>
+              <td>{offer.propertyLocation}</td>
+              <td>{offer.buyerName}</td>
+              <td>{offer.buyerEmail}</td>
+              <td>${offer.offerAmount}</td>
+              <td>
+                {offer.status === "pending" && (
+                  <div className="flex gap-2">
+                    <button
+                      className="btn btn-xs btn-success"
+                      onClick={() => handleAccept(offer._id, offer.propertyId)}
                     >
-                      {offer.status}
-                    </span>
-                  </td>
-                  <td className="space-x-2 text-center">
-                    {offer.status === 'pending' ? (
-                      <>
-                        <button
-                          className="btn btn-sm btn-success"
-                          onClick={() => handleAccept(offer._id, offer.propertyId)}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          className="btn btn-sm btn-error"
-                          onClick={() => handleReject(offer._id)}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    ) : (
-                      <span className="text-gray-400 italic">No actions</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      Accept
+                    </button>
+                    <button
+                      className="btn btn-xs btn-error"
+                      onClick={() => handleReject(offer._id)}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+                {offer.status === "accepted" && (
+                  <span className="text-green-600 font-semibold">Accepted</span>
+                )}
+                {offer.status === "rejected" && (
+                  <span className="text-red-500 font-semibold">Rejected</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

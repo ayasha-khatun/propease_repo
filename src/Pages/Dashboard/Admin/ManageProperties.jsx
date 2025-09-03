@@ -1,62 +1,64 @@
-import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
-import useAxiosSecure from './../../../hooks/useAxiosSecure';
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../Hooks/useAuth";
 
-const ManageProperties = () => {
-  const [properties, setProperties] = useState([]);
-  const [disabledIds, setDisabledIds] = useState([]);
+const RequestedProperties = () => {
+  const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
 
-  const fetchProperties = async () => {
+  // Fetch agent's requested/offered properties
+  const fetchOffers = async () => {
     try {
-      const res = await axiosSecure.get('/admin/properties');
-      setProperties(res.data);
+      const res = await axiosSecure.get(`/offers/agent/${user?.email}`);
+      setOffers(res.data);
     } catch (err) {
-      console.error('Failed to load properties', err);
-      Swal.fire('Error', 'Failed to load properties', 'error');
+      console.error("Failed to load offers", err);
+      Swal.fire("Error", "Failed to load offers", "error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    if (user?.email) {
+      fetchOffers();
+    }
+  }, [user?.email]);
 
-  const disableTemporarily = (id) => {
-    setDisabledIds((prev) => [...new Set([...prev, id])]);
-  };
-
-  const handleVerify = async (id) => {
-    disableTemporarily(id);
+  // Handle Accept Offer
+  const handleAccept = async (offerId, propertyId) => {
     try {
-      const res = await axiosSecure.patch(`/admin/properties/${id}/verify`);
-      if (res.data?.modifiedCount > 0) {
-        Swal.fire('Verified!', 'Property has been verified.', 'success');
-        fetchProperties();
+      const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
+        propertyId,
+      });
+      if (res.data.modifiedCount > 0 || res.data.matchedCount > 0) {
+        Swal.fire("Accepted!", "Offer has been accepted.", "success");
+        fetchOffers();
       } else {
-        Swal.fire('No Change', 'No update made to the property.', 'info');
+        Swal.fire("No Change", "No update made to the offer.", "info");
       }
     } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Verification failed.', 'error');
+      console.error("Accept error", err);
+      Swal.fire("Error", "Failed to accept offer.", "error");
     }
   };
 
-  const handleReject = async (id) => {
-    disableTemporarily(id);
+  // Handle Reject Offer
+  const handleReject = async (offerId) => {
     try {
-      const res = await axiosSecure.patch(`/admin/properties/${id}/reject`);
-      if (res.data?.modifiedCount > 0) {
-        Swal.fire('Rejected!', 'Property has been rejected.', 'success');
-        fetchProperties();
+      const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
+      if (res.data.modifiedCount > 0) {
+        Swal.fire("Rejected!", "Offer has been rejected.", "success");
+        fetchOffers();
       } else {
-        Swal.fire('No Change', 'No update made to the property.', 'info');
+        Swal.fire("No Change", "No update made to the offer.", "info");
       }
     } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Rejection failed.', 'error');
+      console.error("Reject error", err);
+      Swal.fire("Error", "Failed to reject offer.", "error");
     }
   };
 
@@ -70,72 +72,59 @@ const ManageProperties = () => {
 
   return (
     <div className="overflow-x-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Manage Properties</h2>
+      <h2 className="text-2xl font-bold mb-4">Requested / Offered Properties</h2>
 
       <table className="table table-zebra w-full">
         <thead>
           <tr>
             <th>#</th>
-            <th>Title</th>
+            <th>Property Title</th>
             <th>Location</th>
-            <th>Agent</th>
-            <th>Email</th>
-            <th>Price Range</th>
-            <th>Verify</th>
-            <th>Reject</th>
+            <th>Buyer Name</th>
+            <th>Buyer Email</th>
+            <th>Offer Price</th>
+            <th>Status / Actions</th>
           </tr>
         </thead>
         <tbody>
-          {properties.map((p, idx) => {
-            const isDisabled = disabledIds.includes(p._id);
-            const isVerified = p.verificationStatus === 'verified';
-            const isRejected = p.verificationStatus === 'rejected';
-
-            return (
-              <tr key={p._id || idx}>
-                <td>{idx + 1}</td>
-                <td>{p.title}</td>
-                <td>{p.location}</td>
-                <td>{p.agentName || 'N/A'}</td>
-                <td>{p.agentEmail || 'N/A'}</td>
-                <td>{p.priceRange}</td>
-                <td>
-                  {isVerified ? (
-                    <span className="text-green-600 font-semibold">Verified</span>
-                  ) : isRejected ? (
-                    <button className="btn btn-xs btn-disabled">Verify</button>
-                  ) : (
+          {offers.map((offer, idx) => (
+            <tr key={offer._id}>
+              <td>{idx + 1}</td>
+              <td>{offer.propertyTitle}</td>
+              <td>{offer.propertyLocation}</td>
+              <td>{offer.buyerName}</td>
+              <td>{offer.buyerEmail}</td>
+              <td>${offer.offerAmount}</td>
+              <td>
+                {offer.status === "pending" && (
+                  <div className="flex gap-2">
                     <button
                       className="btn btn-xs btn-success"
-                      onClick={() => handleVerify(p._id)}
-                      disabled={isDisabled}
+                      onClick={() => handleAccept(offer._id, offer.propertyId)}
                     >
-                      Verify
+                      Accept
                     </button>
-                  )}
-                </td>
-                <td>
-                  {isRejected ? (
-                    <span className="text-red-500 font-semibold">Rejected</span>
-                  ) : isVerified ? (
-                    <button className="btn btn-xs btn-disabled">Reject</button>
-                  ) : (
                     <button
                       className="btn btn-xs btn-error"
-                      onClick={() => handleReject(p._id)}
-                      disabled={isDisabled}
+                      onClick={() => handleReject(offer._id)}
                     >
                       Reject
                     </button>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
+                  </div>
+                )}
+                {offer.status === "accepted" && (
+                  <span className="text-green-600 font-semibold">Accepted</span>
+                )}
+                {offer.status === "rejected" && (
+                  <span className="text-red-500 font-semibold">Rejected</span>
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 };
 
-export default ManageProperties;
+export default RequestedProperties;
