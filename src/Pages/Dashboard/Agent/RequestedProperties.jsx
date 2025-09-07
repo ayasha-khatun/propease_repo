@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import useAuth from "../../../Hooks/useAuth";
+import useAuth from './../../../hooks/useAuth';
+import useAxiosSecure from './../../../hooks/useAxiosSecure';
 
 const RequestedProperties = () => {
   const [offers, setOffers] = useState([]);
@@ -28,40 +28,54 @@ const RequestedProperties = () => {
     }
   }, [user?.email]);
 
-  // Handle Accept Offer
-  const handleAccept = async (offerId, propertyId) => {
-    try {
-      const res = await axiosSecure.patch(`/offers/${offerId}/accept`, {
-        propertyId,
-      });
+  // ✅ Handle Accept Offer
+const handleAccept = async (offerId, propertyId) => {
+  try {
+    const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
+      propertyId,
+    });
 
-      if (res.data.modifiedCount > 0) {
-        Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
-        fetchOffers();
-      } else {
-        Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
-      }
-    } catch (err) {
-      console.error("Accept error", err);
-      Swal.fire("❌ Error", "Failed to accept offer.", "error");
-    }
-  };
+    if (res.data.modifiedCount > 0) {
+      Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
 
-  // Handle Reject Offer
-  const handleReject = async (offerId) => {
-    try {
-      const res = await axiosSecure.patch(`/offers/${offerId}/reject`);
-      if (res.data.modifiedCount > 0) {
-        Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
-        fetchOffers();
-      } else {
-        Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
-      }
-    } catch (err) {
-      console.error("Reject error", err);
-      Swal.fire("❌ Error", "Failed to reject offer.", "error");
+      // 🔥 update local state instantly
+      setOffers((prevOffers) =>
+        prevOffers.map((offer) =>
+          offer._id === offerId ? { ...offer, status: "accepted" } : offer
+        )
+      );
+    } else {
+      Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
     }
-  };
+  } catch (err) {
+    console.error("Accept error", err);
+    Swal.fire("❌ Error", "Failed to accept offer.", "error");
+  }
+};
+
+// ✅ Handle Reject Offer
+const handleReject = async (offerId) => {
+  try {
+    const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
+
+    if (res.data.modifiedCount > 0) {
+      Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
+
+      // 🔥 update local state instantly
+      setOffers((prevOffers) =>
+        prevOffers.map((offer) =>
+          offer._id === offerId ? { ...offer, status: "rejected" } : offer
+        )
+      );
+    } else {
+      Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
+    }
+  } catch (err) {
+    console.error("Reject error", err);
+    Swal.fire("❌ Error", "Failed to reject offer.", "error");
+  }
+};
+
 
   if (loading) {
     return (
