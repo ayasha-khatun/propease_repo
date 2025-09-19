@@ -1,81 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import moment from 'moment';
+// src/Pages/Dashboard/User/MyReviews.jsx
+import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import useAxiosSecure from './../../../hooks/useAxiosSecure';
+import useAuth from './../../../hooks/useAuth';
 
 const MyReviews = () => {
+  const axiosSecure = useAxiosSecure;
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user's reviews
+  // Fetch logged-in user's reviews
   useEffect(() => {
-    if (user?.email) {
-      axios
-        .get(`http://localhost:5000/reviews?email=${user.email}`)
-        .then(res => {
-          setReviews(res.data);
+    const fetchReviews = async () => {
+      if (user?.email) {
+        try {
+          setLoading(true);
+          const response = await axiosSecure.get(`/reviews?email=${user.email}`);
+          setReviews(response.data);
+        } catch (err) {
+          console.error("❌ Failed to fetch reviews:", err);
+          Swal.fire("Error", "Failed to load your reviews", "error");
+        } finally {
           setLoading(false);
-        })
-        .catch(err => {
-          console.error('Review fetch error:', err);
-          setLoading(false);
-        });
-    }
-  }, [user?.email]);
-
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This will delete the review permanently.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
-    }).then(result => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`http://localhost:5000/reviews/${id}`)
-          .then(res => {
-            if (res.data.deletedCount > 0) {
-              Swal.fire('Deleted!', 'Review has been deleted.', 'success');
-              setReviews(reviews.filter(r => r._id !== id));
-            }
-          })
-          .catch(() => {
-            Swal.fire('Error!', 'Failed to delete the review.', 'error');
-          });
+        }
       }
+    };
+
+    fetchReviews();
+  }, [user, axiosSecure]);
+
+  // Delete review
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to recover this review!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
     });
+
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/reviews/${id}`);
+        setReviews(reviews.filter((r) => r._id !== id));
+        Swal.fire("Deleted!", "Your review has been deleted.", "success");
+      } catch (error) {
+        console.error("Delete error:", error);
+        Swal.fire("Error!", "Failed to delete review.", "error");
+      }
+    }
   };
 
   if (loading) {
-    return <p className="text-center mt-10">Loading your reviews...</p>;
+    return <div className="p-6">Loading your reviews...</div>;
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-6">My Reviews</h2>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6">My Reviews</h2>
 
       {reviews.length === 0 ? (
-        <p className="text-center text-gray-500">You haven’t added any reviews yet.</p>
+        <p className="text-gray-500">You haven't added any reviews yet.</p>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reviews.map(review => (
-            <div key={review._id} className="bg-white p-5 rounded-lg shadow-md">
-              <h3 className="text-lg font-bold text-blue-700">{review.propertyTitle}</h3>
-              <p className="text-sm text-gray-600 mb-1">👤 Agent: {review.displayName || 'N/A'}</p>
-              <p className="text-xs text-gray-500 mb-2">
-                {moment(review.reviewTime || review.createdAt).format('MMMM Do YYYY, h:mm A')}
-              </p>
-              <p className="text-gray-700 mb-3">💬 {review.review}</p>
+        <div className="grid gap-4">
+          {reviews.map((review) => (
+            <div
+              key={review._id}
+              className="p-4 border rounded-lg shadow-sm bg-white flex items-start gap-4"
+            >
+              {/* Reviewer Image */}
+              <img
+                src={review.reviewerImage || "https://i.ibb.co/4pDNDk1/avatar.png"}
+                alt={review.displayName}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg">{review.propertyTitle}</h3>
+                <p className="text-sm text-gray-600">
+                  by {review.displayName} ({review.userEmail})
+                </p>
+                <p className="mt-2">{review.review}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(review.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+
+              {/* Delete Button */}
               <button
                 onClick={() => handleDelete(review._id)}
-                className="btn btn-sm btn-error w-full"
+                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
               >
-                Delete Review
+                Delete
               </button>
             </div>
           ))}

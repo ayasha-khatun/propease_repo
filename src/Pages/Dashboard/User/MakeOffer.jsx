@@ -6,7 +6,7 @@ import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
 
 const MakeOffer = () => {
-  const { id } = useParams(); // propertyId/_id
+  const { id } = useParams(); // propertyId
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
   const { role, loading } = useRole();
@@ -14,7 +14,7 @@ const MakeOffer = () => {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
 
-  // Property fetch
+  // Fetch property
   useEffect(() => {
     const fetchProperty = async () => {
       try {
@@ -38,12 +38,13 @@ const MakeOffer = () => {
       return Swal.fire("Permission Denied", "Only users can make an offer!", "error");
     }
 
-    if (!amount || isNaN(amount)) {
+    const offerValue = Number(amount);
+    if (!offerValue || isNaN(offerValue)) {
       return Swal.fire("Invalid", "Please enter a valid offer amount", "error");
     }
 
     if (property) {
-      if (amount < property.minPrice || amount > property.maxPrice) {
+      if (offerValue < property.minPrice || offerValue > property.maxPrice) {
         return Swal.fire(
           "Invalid Offer",
           `Your offer must be between $${property.minPrice} and $${property.maxPrice}`,
@@ -60,8 +61,8 @@ const MakeOffer = () => {
       agentEmail: property?.agentEmail,
       buyerName: user?.displayName,
       buyerEmail: user?.email,
-      offerAmount: Number(amount),
-      status: "pending",
+      offerAmount: offerValue,
+      status: "pending", // will show in "Property Bought" as pending
       date,
     };
 
@@ -74,6 +75,8 @@ const MakeOffer = () => {
         setDate("");
       } else if (res.data.alreadyOffered) {
         Swal.fire("ℹ️ Info", "You already made an offer for this property.", "info");
+      } else if (res.data.error) {
+        Swal.fire("❌ Error", res.data.error, "error");
       } else {
         Swal.fire("❌ Error", "Something went wrong.", "error");
       }
@@ -91,43 +94,19 @@ const MakeOffer = () => {
     <div className="max-w-2xl mx-auto mt-10 bg-white p-6 shadow rounded">
       <h2 className="text-2xl font-semibold mb-6">Make an Offer</h2>
       <form onSubmit={handleOffer} className="space-y-4">
-        <input
-          type="text"
-          value={property.title}
-          readOnly
-          className="w-full border px-4 py-2 rounded bg-gray-100"
-        />
-        <input
-          type="text"
-          value={property.location}
-          readOnly
-          className="w-full border px-4 py-2 rounded bg-gray-100"
-        />
-        <input
-          type="text"
-          value={property.agentName}
-          readOnly
-          className="w-full border px-4 py-2 rounded bg-gray-100"
-        />
+        <input type="text" value={property.title} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
+        <input type="text" value={property.location} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
+        <input type="text" value={property.agentName} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
         <input
           type="number"
           placeholder={`Enter amount ($${property.minPrice} - $${property.maxPrice})`}
           className="w-full border px-4 py-2 rounded"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          required
         />
-        <input
-          type="email"
-          value={user?.email}
-          readOnly
-          className="w-full border px-4 py-2 rounded bg-gray-100"
-        />
-        <input
-          type="text"
-          value={user?.displayName}
-          readOnly
-          className="w-full border px-4 py-2 rounded bg-gray-100"
-        />
+        <input type="email" value={user?.email} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
+        <input type="text" value={user?.displayName} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
         <input
           type="date"
           value={date}
@@ -135,10 +114,7 @@ const MakeOffer = () => {
           className="w-full border px-4 py-2 rounded"
           required
         />
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
           Submit Offer
         </button>
       </form>

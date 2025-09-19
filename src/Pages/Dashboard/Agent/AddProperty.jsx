@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { useState } from 'react';
-import useAuth from '../../../hooks/useAuth';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useAuth from './../../../hooks/useAuth';
 
 const AddProperty = () => {
   const { user } = useAuth() || {};
@@ -14,28 +14,32 @@ const AddProperty = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const imageUrl = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2'; // Simulated
+      // 👇 Replace with your image upload logic (Cloudinary / imgbb / etc.)
+      const imageUrl =
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2';
 
       const newProperty = {
         title: data.title,
         location: data.location,
         image: imageUrl,
-        priceRange: data.priceRange,
+        priceRange: `${data.minPrice} - ${data.maxPrice}`, // ✅ Fixed
         agentName: user?.displayName || 'Unknown Agent',
         agentEmail: user?.email || 'unknown@example.com',
         status: 'pending',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
+
+      console.log('Submitting property:', newProperty);
 
       const res = await axiosSecure.post('/properties', newProperty);
       console.log('Backend response:', res.data);
 
       if (res.data.insertedId) {
-        Swal.fire('Success', 'Property added successfully!', 'success');
+        Swal.fire('✅ Success', 'Property added successfully!', 'success');
         reset();
         setImagePreview(null);
       } else {
-        Swal.fire('Error', 'Failed to add property.', 'error');
+        Swal.fire('❌ Error', 'Failed to add property.', 'error');
       }
     } catch (error) {
       console.error('Add property error:', error);
@@ -59,6 +63,7 @@ const AddProperty = () => {
       <h2 className="text-3xl font-bold text-center mb-6">Add New Property</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Property Title */}
         <div>
           <label className="block font-medium mb-1">Property Title</label>
           <input
@@ -69,6 +74,7 @@ const AddProperty = () => {
           />
         </div>
 
+        {/* Location */}
         <div>
           <label className="block font-medium mb-1">Location</label>
           <input
@@ -79,16 +85,30 @@ const AddProperty = () => {
           />
         </div>
 
-        <div>
-          <label className="block font-medium mb-1">Price Range</label>
-          <input
-            type="text"
-            {...register('priceRange', { required: true })}
-            className="input input-bordered w-full"
-            placeholder="$1000 - $5000"
-          />
+        {/* Price Range */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Min Price ($)</label>
+            <input
+              type="number"
+              {...register('minPrice', { required: true, valueAsNumber: true })}
+              className="input input-bordered w-full"
+              placeholder="Enter minimum price"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">Max Price ($)</label>
+            <input
+              type="number"
+              {...register('maxPrice', { required: true, valueAsNumber: true })}
+              className="input input-bordered w-full"
+              placeholder="Enter maximum price"
+            />
+          </div>
         </div>
 
+        {/* Image Upload */}
         <div>
           <label className="block font-medium mb-1">Upload Image</label>
           <input
@@ -108,6 +128,7 @@ const AddProperty = () => {
           />
         )}
 
+        {/* Agent Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block font-medium mb-1">Agent Name</label>
@@ -132,6 +153,7 @@ const AddProperty = () => {
           </div>
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
           className="btn btn-primary w-full mt-6"

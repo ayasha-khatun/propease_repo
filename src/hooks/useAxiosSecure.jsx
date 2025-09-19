@@ -1,21 +1,23 @@
-import axios from 'axios';
-import { useEffect, useRef } from 'react';
+// src/hooks/useAxiosSecure.jsx
+import axios from "axios";
+import { useEffect, useRef } from "react";
 
 const useAxiosSecure = () => {
+  // keep the same axios instance across renders
   const axiosSecureRef = useRef(
     axios.create({
-      baseURL: 'http://localhost:5000', // your backend
-      withCredentials: true, // allows cookies (if needed)
+      baseURL: "http://localhost:5000", // 🔑 change to your backend base URL
+      withCredentials: true,            // ✅ enable if using cookies/session
     })
   );
 
   useEffect(() => {
     const axiosSecure = axiosSecureRef.current;
 
-    // Attach token in every request
+    // 🔑 Attach JWT in headers for every request
     const requestInterceptor = axiosSecure.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('access-token');
+        const token = localStorage.getItem("access-token");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -24,27 +26,28 @@ const useAxiosSecure = () => {
       (error) => Promise.reject(error)
     );
 
-    // Handle expired or invalid token
+    // 🔑 Handle unauthorized/forbidden responses
     const responseInterceptor = axiosSecure.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          console.warn('⚠️ Unauthorized! Token expired or invalid.');
-          // Instead of auto-redirecting here, just remove token
-          localStorage.removeItem('access-token');
+          console.error("⚠️ Unauthorized! Token expired or invalid.", error.response.data);
+          localStorage.removeItem("access-token");
         } else if (error.response?.status === 403) {
-          console.warn('🚫 Forbidden! Insufficient permissions.');
+          console.error("🚫 Forbidden! Insufficient permissions.", error.response.data);
         }
         return Promise.reject(error);
       }
     );
 
+    // cleanup on unmount
     return () => {
       axiosSecure.interceptors.request.eject(requestInterceptor);
       axiosSecure.interceptors.response.eject(responseInterceptor);
     };
   }, []);
 
+  // ✅ always return the axios instance
   return axiosSecureRef.current;
 };
 
