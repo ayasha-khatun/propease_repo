@@ -2,7 +2,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import banner1 from '../../../assets/banner1.jpg';
 import banner2 from '../../../assets/banner2.jpg';
 import banner3 from '../../../assets/banner3.jpg';
@@ -12,7 +11,7 @@ const banners = [
     id: 1,
     image: banner1,
     title: 'Unlock Your New Address',
-    subtitle: 'Discover verified properties tailored to your lifestyle..',
+    subtitle: 'Discover verified properties tailored to your lifestyle.',
   },
   {
     id: 2,
@@ -39,18 +38,27 @@ const BannerSlider = () => {
         className="mySwiper"
       >
         {banners.map((banner) => (
-          <SwiperSlide key={banner.id} className='relative'>
-            <div className="min-h-[80vh] opacity-80"
+          <SwiperSlide key={banner.id} className="relative">
+            <div
+              className="min-h-[80vh] w-full flex flex-col justify-center items-center text-center relative"
               style={{
                 backgroundImage: `url(${banner.image})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                
+                backgroundRepeat: 'no-repeat',
               }}
             >
-              <div className="flex flex-col justify-items-center items-center">
-                  <h2 className="text-2xl md:text-4xl font-bold text-white">{banner.title}</h2>
-                   <p className="text-white mt-2 text-sm md:text-base">{banner.subtitle}</p>
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-black/40 z-10"></div>
+
+              {/* Text Content */}
+              <div className="relative z-20 px-4">
+                <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
+                  {banner.title}
+                </h2>
+                <p className="text-white mt-3 text-sm md:text-lg drop-shadow-md">
+                  {banner.subtitle}
+                </p>
               </div>
             </div>
           </SwiperSlide>
