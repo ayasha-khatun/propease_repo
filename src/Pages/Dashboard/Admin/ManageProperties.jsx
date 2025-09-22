@@ -22,7 +22,11 @@ const ManageProperties = () => {
     try {
       const res = await axiosSecure.patch(`/admin/properties/${id}/verify`);
       if (res.data.modifiedCount > 0) {
-        fetchProperties();
+        setProperties(prev =>
+          prev.map(p =>
+            p._id === id ? { ...p, verificationStatus: "verified" } : p
+          )
+        );
         alert("✅ Property verified successfully!");
       }
     } catch (err) {
@@ -36,7 +40,11 @@ const ManageProperties = () => {
     try {
       const res = await axiosSecure.patch(`/admin/properties/${id}/reject`);
       if (res.data.modifiedCount > 0) {
-        fetchProperties();
+        setProperties(prev =>
+          prev.map(p =>
+            p._id === id ? { ...p, verificationStatus: "rejected" } : p
+          )
+        );
         alert("❌ Property rejected.");
       }
     } catch (err) {
@@ -83,22 +91,22 @@ const ManageProperties = () => {
                     )}
                   </td>
                   <td>
-                    {prop.verificationStatus === "pending" && (
-                      <div className="flex gap-2">
-                        <button
-                          className="btn btn-sm btn-success"
-                          onClick={() => handleVerify(prop._id)}
-                        >
-                          Verify
-                        </button>
-                        <button
-                          className="btn btn-sm btn-error"
-                          onClick={() => handleReject(prop._id)}
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex gap-2">
+                      <button
+                        className="btn btn-sm btn-success"
+                        onClick={() => handleVerify(prop._id)}
+                        disabled={prop.verificationStatus !== "pending"}
+                      >
+                        Verify
+                      </button>
+                      <button
+                        className="btn btn-sm btn-error"
+                        onClick={() => handleReject(prop._id)}
+                        disabled={prop.verificationStatus !== "pending"}
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
