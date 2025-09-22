@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import useAuth from './../../../hooks/useAuth';
-import useAxiosSecure from './../../../hooks/useAxiosSecure';
+import useAuth from "./../../../hooks/useAuth";
+import useAxiosSecure from "./../../../hooks/useAxiosSecure";
 
 const RequestedProperties = () => {
   const [offers, setOffers] = useState([]);
@@ -9,7 +9,7 @@ const RequestedProperties = () => {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
 
-  // Fetch agent's requested/offered properties
+  // Fetch offers for this agent
   const fetchOffers = async () => {
     try {
       const res = await axiosSecure.get(`/offers/agent/${user?.email}`);
@@ -28,54 +28,36 @@ const RequestedProperties = () => {
     }
   }, [user?.email]);
 
-  // ✅ Handle Accept Offer
-const handleAccept = async (offerId, propertyId) => {
-  try {
-    const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
-      propertyId,
-    });
+  // Accept offer
+  const handleAccept = async (offerId, propertyId) => {
+    try {
+      const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
+        propertyId,
+      });
 
-    if (res.data.modifiedCount > 0) {
-      Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
-
-      // 🔥 update local state instantly
-      setOffers((prevOffers) =>
-        prevOffers.map((offer) =>
-          offer._id === offerId ? { ...offer, status: "accepted" } : offer
-        )
-      );
-    } else {
-      Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
+      if (res.data.modifiedCount > 0) {
+        Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
+        fetchOffers(); // refresh all offers
+      }
+    } catch (err) {
+      console.error("Accept error", err);
+      Swal.fire("❌ Error", "Failed to accept offer.", "error");
     }
-  } catch (err) {
-    console.error("Accept error", err);
-    Swal.fire("❌ Error", "Failed to accept offer.", "error");
-  }
-};
+  };
 
-// ✅ Handle Reject Offer
-const handleReject = async (offerId) => {
-  try {
-    const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
-
-    if (res.data.modifiedCount > 0) {
-      Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
-
-      // 🔥 update local state instantly
-      setOffers((prevOffers) =>
-        prevOffers.map((offer) =>
-          offer._id === offerId ? { ...offer, status: "rejected" } : offer
-        )
-      );
-    } else {
-      Swal.fire("ℹ️ Info", "No update made to the offer.", "info");
+  // Reject offer
+  const handleReject = async (offerId) => {
+    try {
+      const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
+      if (res.data.modifiedCount > 0) {
+        Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
+        fetchOffers();
+      }
+    } catch (err) {
+      console.error("Reject error", err);
+      Swal.fire("❌ Error", "Failed to reject offer.", "error");
     }
-  } catch (err) {
-    console.error("Reject error", err);
-    Swal.fire("❌ Error", "Failed to reject offer.", "error");
-  }
-};
-
+  };
 
   if (loading) {
     return (
@@ -111,7 +93,7 @@ const handleReject = async (offerId) => {
               <td>{offer.buyerEmail}</td>
               <td>${offer.offerAmount}</td>
               <td>
-                {offer.status === "pending" && (
+                {(!offer.status || offer.status === "pending") && (
                   <div className="flex gap-2">
                     <button
                       className="btn btn-xs btn-success"

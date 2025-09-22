@@ -1,3 +1,4 @@
+// src/pages/Admin/ManageUsers/ManageUsers.jsx
 import { useEffect, useState } from 'react';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import Swal from 'sweetalert2';
@@ -7,10 +8,11 @@ const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [disabledIds, setDisabledIds] = useState([]);
 
+  // Fetch all users
   useEffect(() => {
     axiosSecure.get('/users')
       .then(res => setUsers(res.data))
-      .catch(err => console.error(err));
+      .catch(err => console.error('Error fetching users:', err));
   }, [axiosSecure]);
 
   const disableTemporarily = (id) => {
@@ -19,13 +21,12 @@ const ManageUsers = () => {
 
   const handleMakeAdmin = (id) => {
     disableTemporarily(id);
-    axiosSecure.patch(`/users/make-admin/${id}`)
+    axiosSecure.patch(`/users/make-admin/${id}`) // <-- add this endpoint in backend or keep existing if upsert works
       .then(() => {
         Swal.fire('Success', 'User promoted to Admin', 'success');
-        setUsers(prev =>
-          prev.map(u => u._id === id ? { ...u, role: 'admin' } : u)
-        );
-      });
+        setUsers(prev => prev.map(u => u._id === id ? { ...u, role: 'admin' } : u));
+      })
+      .catch(err => console.error(err));
   };
 
   const handleMakeAgent = (id) => {
@@ -33,16 +34,15 @@ const ManageUsers = () => {
     axiosSecure.patch(`/users/make-agent/${id}`)
       .then(() => {
         Swal.fire('Success', 'User promoted to Agent', 'success');
-        setUsers(prev =>
-          prev.map(u => u._id === id ? { ...u, role: 'agent' } : u)
-        );
-      });
+        setUsers(prev => prev.map(u => u._id === id ? { ...u, role: 'agent' } : u));
+      })
+      .catch(err => console.error(err));
   };
 
-  const handleMarkFraud = (id, email) => {
+  const handleMarkFraud = (id) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: `This will mark the agent as fraud and delete all their properties.`,
+      text: 'This will mark the agent as fraud and remove their properties from all properties page.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, mark as fraud',
@@ -52,38 +52,35 @@ const ManageUsers = () => {
         disableTemporarily(id);
         axiosSecure.patch(`/users/mark-fraud/${id}`)
           .then(() => {
-            Swal.fire(
-              'Marked as Fraud',
-              'Agent has been flagged and properties removed.',
-              'success'
-            );
-            setUsers(prev =>
-              prev.map(u => u._id === id ? { ...u, role: 'fraud' } : u)
-            );
+            Swal.fire('Marked as Fraud', 'Agent has been flagged and properties removed.', 'success');
+            setUsers(prev => prev.map(u => u._id === id ? { ...u, role: 'fraud' } : u));
           })
-          .catch(error => {
-            console.error('Error marking fraud:', error);
+          .catch(err => {
+            console.error(err);
             Swal.fire('Error', 'Something went wrong.', 'error');
           });
       }
     });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id, email) => {
     Swal.fire({
       title: 'Are you sure?',
-      text: "User will be permanently deleted!",
+      text: 'User will be permanently deleted!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete!'
-    }).then((result) => {
+      confirmButtonText: 'Yes, delete!',
+      confirmButtonColor: '#d33'
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosSecure.delete(`/users/${id}`)
-          .then(() => {
-            Swal.fire('Deleted!', 'User has been deleted.', 'success');
-            setUsers(users.filter(u => u._id !== id));
-          });
+        try {
+          await axiosSecure.delete(`/users/${email}`);
+          Swal.fire('Deleted!', 'User has been deleted.', 'success');
+          setUsers(prev => prev.filter(u => u._id !== id));
+        } catch (err) {
+          console.error(err);
+          Swal.fire('Error', 'Failed to delete user.', 'error');
+        }
       }
     });
   };
@@ -91,6 +88,7 @@ const ManageUsers = () => {
   return (
     <div className="overflow-x-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Manage Users</h2>
+
       <table className="table table-zebra w-full">
         <thead>
           <tr>
@@ -104,80 +102,59 @@ const ManageUsers = () => {
           </tr>
         </thead>
         <tbody>
-          {
-            users.map((user, index) => {
-              const isDisabled = disabledIds.includes(user._id);
+          {users.map((user, index) => {
+            const isDisabled = disabledIds.includes(user._id);
 
-              return (
-                <tr key={user._id}>
-                  <td>{index + 1}</td>
-                  <td>{user.name || 'N/A'}</td>
-                  <td>{user.email}</td>
+            return (
+              <tr key={user._id}>
+                <td>{index + 1}</td>
+                <td>{user.name || 'N/A'}</td>
+                <td>{user.email}</td>
 
-                  {/* Admin Button or Label */}
-                  <td>
-                    {user.role === 'admin' ? (
-                      <span className="text-green-600 font-semibold">Admin</span>
-                    ) : user.role === 'fraud' ? (
-                      <span className="text-gray-400 text-sm">N/A</span>
-                    ) : (
-                      <button
-                        onClick={() => handleMakeAdmin(user._id)}
-                        className="btn btn-xs btn-success"
-                        disabled={isDisabled}
-                      >
-                        Make Admin
-                      </button>
-                    )}
-                  </td>
-
-                  {/* Agent Button or Label */}
-                  <td>
-                    {user.role === 'agent' ? (
-                      <span className="text-blue-600 font-semibold">Agent</span>
-                    ) : user.role === 'fraud' ? (
-                      <span className="text-gray-400 text-sm">N/A</span>
-                    ) : (
-                      <button
-                        onClick={() => handleMakeAgent(user._id)}
-                        className="btn btn-xs btn-primary"
-                        disabled={isDisabled}
-                      >
-                        Make Agent
-                      </button>
-                    )}
-                  </td>
-
-                  {/* Fraud Button or Label */}
-                  <td>
-                    {user.role === 'fraud' ? (
-                      <span className="text-red-500 font-semibold">Fraud</span>
-                    ) : user.role === 'agent' ? (
-                      <button
-                        onClick={() => handleMarkFraud(user._id, user.email)}
-                        className="btn btn-xs btn-warning"
-                        disabled={isDisabled}
-                      >
-                        Fraud
-                      </button>
-                    ) : (
-                      <span className="text-gray-400 text-sm">N/A</span>
-                    )}
-                  </td>
-
-                  {/* Delete Button */}
-                  <td>
-                    <button
-                      onClick={() => handleDelete(user._id)}
-                      className="btn btn-xs btn-error"
-                    >
-                      Delete
+                <td>
+                  {user.role === 'admin' ? (
+                    <span className="text-green-600 font-semibold">Admin</span>
+                  ) : user.role === 'fraud' ? (
+                    <span className="text-gray-400 text-sm">N/A</span>
+                  ) : (
+                    <button className="btn btn-xs btn-success" onClick={() => handleMakeAdmin(user._id)} disabled={isDisabled}>
+                      Make Admin
                     </button>
-                  </td>
-                </tr>
-              );
-            })
-          }
+                  )}
+                </td>
+
+                <td>
+                  {user.role === 'agent' ? (
+                    <span className="text-blue-600 font-semibold">Agent</span>
+                  ) : user.role === 'fraud' ? (
+                    <span className="text-gray-400 text-sm">N/A</span>
+                  ) : (
+                    <button className="btn btn-xs btn-primary" onClick={() => handleMakeAgent(user._id)} disabled={isDisabled}>
+                      Make Agent
+                    </button>
+                  )}
+                </td>
+
+                <td>
+                  {user.role === 'fraud' ? (
+                    <span className="text-red-500 font-semibold">Fraud</span>
+                  ) : user.role === 'agent' ? (
+                    <button className="btn btn-xs btn-warning" onClick={() => handleMarkFraud(user._id)} disabled={isDisabled}>
+                      Fraud
+                    </button>
+                  ) : (
+                    <span className="text-gray-400 text-sm">N/A</span>
+                  )}
+                </td>
+
+                <td>
+                  <button className="btn btn-xs btn-error" onClick={() => handleDelete(user._id, user.email)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
