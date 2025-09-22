@@ -1,52 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import useAuth from '../../../hooks/useAuth';
+import React, { useEffect, useState } from "react";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const MySoldProperties = () => {
-  const { user } = useAuth;
+  const { user } = useAuth(); // agent info
+  const axiosSecure = useAxiosSecure();
   const [soldProperties, setSoldProperties] = useState([]);
 
   useEffect(() => {
     if (user?.email) {
-      axios
-        .get(`http://localhost:5000/sold-properties/${user.email}`)
-        .then((res) => {
-          setSoldProperties(res.data);
-        })
-        .catch((error) => {
-          console.error('Error fetching sold properties:', error);
-        });
+      axiosSecure
+        .get(`/offers/sold/${user.email}`)
+        .then(res => setSoldProperties(res.data))
+        .catch(err => console.error("Error fetching sold properties:", err));
     }
-  }, [user]);
+  }, [user?.email, axiosSecure]);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">My Sold Properties</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">My Sold Properties</h2>
 
       {soldProperties.length === 0 ? (
-        <p>No sold properties yet.</p>
+        <p className="text-center text-gray-500">No sold properties yet.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full border">
-            <thead className="bg-gray-100 text-left">
-              <tr>
-                <th className="px-4 py-2 border">#</th>
-                <th className="px-4 py-2 border">Title</th>
-                <th className="px-4 py-2 border">Location</th>
-                <th className="px-4 py-2 border">Buyer Name</th>
-                <th className="px-4 py-2 border">Buyer Email</th>
-                <th className="px-4 py-2 border">Sold Price</th>
+          <table className="table w-full border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th>Property Title</th>
+                <th>Location</th>
+                <th>Buyer Name</th>
+                <th>Buyer Email</th>
+                <th>Sold Price</th>
               </tr>
             </thead>
             <tbody>
-              {soldProperties.map((property, index) => (
-                <tr key={property._id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{index + 1}</td>
-                  <td className="px-4 py-2 border">{property.title}</td>
-                  <td className="px-4 py-2 border">{property.location}</td>
-                  <td className="px-4 py-2 border">{property.buyerName}</td>
-                  <td className="px-4 py-2 border">{property.buyerEmail}</td>
-                  <td className="px-4 py-2 border">${property.offerAmount}</td>
+              {soldProperties.map(offer => (
+                <tr key={offer._id} className="hover:bg-gray-50">
+                  <td>{offer.title}</td>
+                  <td>{offer.location}</td>
+                  <td>{offer.buyerName}</td>
+                  <td>{offer.buyerEmail}</td>
+                  <td>${offer.offeredAmount}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,20 +1,22 @@
 // src/hooks/useAxiosSecure.jsx
 import axios from "axios";
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useAxiosSecure = () => {
-  // keep the same axios instance across renders
+  const navigate = useNavigate();
+
   const axiosSecureRef = useRef(
     axios.create({
-      baseURL: "http://localhost:5000", // 🔑 change to your backend base URL
-      withCredentials: true,            // ✅ enable if using cookies/session
+      baseURL: "http://localhost:5000",
+      withCredentials: true,
     })
   );
 
   useEffect(() => {
     const axiosSecure = axiosSecureRef.current;
 
-    // 🔑 Attach JWT in headers for every request
+    // Attach JWT token to request headers
     const requestInterceptor = axiosSecure.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem("access-token");
@@ -26,13 +28,14 @@ const useAxiosSecure = () => {
       (error) => Promise.reject(error)
     );
 
-    // 🔑 Handle unauthorized/forbidden responses
+    // Handle unauthorized and forbidden responses
     const responseInterceptor = axiosSecure.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          console.error("⚠️ Unauthorized! Token expired or invalid.", error.response.data);
+          console.warn("⚠️ Unauthorized! Token expired or invalid.", error.response.data);
           localStorage.removeItem("access-token");
+          navigate("/login"); // Redirect user to login page
         } else if (error.response?.status === 403) {
           console.error("🚫 Forbidden! Insufficient permissions.", error.response.data);
         }
@@ -40,14 +43,12 @@ const useAxiosSecure = () => {
       }
     );
 
-    // cleanup on unmount
     return () => {
       axiosSecure.interceptors.request.eject(requestInterceptor);
       axiosSecure.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [navigate]);
 
-  // ✅ always return the axios instance
   return axiosSecureRef.current;
 };
 

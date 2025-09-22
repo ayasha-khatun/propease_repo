@@ -1,130 +1,113 @@
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import React, { useEffect, useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import useAuth from "../../../Hooks/useAuth";
 
-const RequestedProperties = () => {
-  const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
+const ManageProperties = () => {
   const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
+  const [properties, setProperties] = useState([]);
 
-  // Fetch agent's requested/offered properties
-  const fetchOffers = async () => {
-    try {
-      const res = await axiosSecure.get(`/offers/agent/${user?.email}`);
-      setOffers(res.data);
-    } catch (err) {
-      console.error("Failed to load offers", err);
-      Swal.fire("Error", "Failed to load offers", "error");
-    } finally {
-      setLoading(false);
-    }
+  // Fetch all agent-submitted properties
+  const fetchProperties = () => {
+    axiosSecure
+      .get("/admin/properties")
+      .then(res => setProperties(res.data))
+      .catch(err => console.error("Error fetching properties:", err));
   };
 
   useEffect(() => {
-    if (user?.email) {
-      fetchOffers();
-    }
-  }, [user?.email]);
+    fetchProperties();
+  }, []);
 
-  // Handle Accept Offer
-  const handleAccept = async (offerId, propertyId) => {
+  // Handle verify
+  const handleVerify = async (id) => {
     try {
-      const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
-        propertyId,
-      });
-      if (res.data.modifiedCount > 0 || res.data.matchedCount > 0) {
-        Swal.fire("Accepted!", "Offer has been accepted.", "success");
-        fetchOffers();
-      } else {
-        Swal.fire("No Change", "No update made to the offer.", "info");
-      }
-    } catch (err) {
-      console.error("Accept error", err);
-      Swal.fire("Error", "Failed to accept offer.", "error");
-    }
-  };
-
-  // Handle Reject Offer
-  const handleReject = async (offerId) => {
-    try {
-      const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
+      const res = await axiosSecure.patch(`/admin/properties/${id}/verify`);
       if (res.data.modifiedCount > 0) {
-        Swal.fire("Rejected!", "Offer has been rejected.", "success");
-        fetchOffers();
-      } else {
-        Swal.fire("No Change", "No update made to the offer.", "info");
+        fetchProperties();
+        alert("✅ Property verified successfully!");
       }
     } catch (err) {
-      console.error("Reject error", err);
-      Swal.fire("Error", "Failed to reject offer.", "error");
+      console.error("Error verifying property:", err);
+      alert("Failed to verify property.");
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-4 text-center">
-        <span className="loading loading-spinner text-primary"></span>
-      </div>
-    );
-  }
+  // Handle reject
+  const handleReject = async (id) => {
+    try {
+      const res = await axiosSecure.patch(`/admin/properties/${id}/reject`);
+      if (res.data.modifiedCount > 0) {
+        fetchProperties();
+        alert("❌ Property rejected.");
+      }
+    } catch (err) {
+      console.error("Error rejecting property:", err);
+      alert("Failed to reject property.");
+    }
+  };
 
   return (
-    <div className="overflow-x-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Requested / Offered Properties</h2>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold text-center mb-6">Manage Properties</h2>
 
-      <table className="table table-zebra w-full">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Property Title</th>
-            <th>Location</th>
-            <th>Buyer Name</th>
-            <th>Buyer Email</th>
-            <th>Offer Price</th>
-            <th>Status / Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {offers.map((offer, idx) => (
-            <tr key={offer._id}>
-              <td>{idx + 1}</td>
-              <td>{offer.propertyTitle}</td>
-              <td>{offer.propertyLocation}</td>
-              <td>{offer.buyerName}</td>
-              <td>{offer.buyerEmail}</td>
-              <td>${offer.offerAmount}</td>
-              <td>
-                {offer.status === "pending" && (
-                  <div className="flex gap-2">
-                    <button
-                      className="btn btn-xs btn-success"
-                      onClick={() => handleAccept(offer._id, offer.propertyId)}
-                    >
-                      Accept
-                    </button>
-                    <button
-                      className="btn btn-xs btn-error"
-                      onClick={() => handleReject(offer._id)}
-                    >
-                      Reject
-                    </button>
-                  </div>
-                )}
-                {offer.status === "accepted" && (
-                  <span className="text-green-600 font-semibold">Accepted</span>
-                )}
-                {offer.status === "rejected" && (
-                  <span className="text-red-500 font-semibold">Rejected</span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {properties.length === 0 ? (
+        <p className="text-center text-gray-500">No properties added by agents yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="table w-full border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th>Title</th>
+                <th>Location</th>
+                <th>Agent Name</th>
+                <th>Agent Email</th>
+                <th>Price Range</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {properties.map((prop) => (
+                <tr key={prop._id} className="hover:bg-gray-50">
+                  <td>{prop.title}</td>
+                  <td>{prop.location}</td>
+                  <td>{prop.agentName}</td>
+                  <td>{prop.agentEmail}</td>
+                  <td>${prop.minPrice} - ${prop.maxPrice}</td>
+                  <td>
+                    {prop.verificationStatus === "pending" && "Pending"}
+                    {prop.verificationStatus === "verified" && (
+                      <span className="text-green-600 font-bold">Verified</span>
+                    )}
+                    {prop.verificationStatus === "rejected" && (
+                      <span className="text-red-600 font-bold">Rejected</span>
+                    )}
+                  </td>
+                  <td>
+                    {prop.verificationStatus === "pending" && (
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() => handleVerify(prop._id)}
+                        >
+                          Verify
+                        </button>
+                        <button
+                          className="btn btn-sm btn-error"
+                          onClick={() => handleReject(prop._id)}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
-export default RequestedProperties;
+export default ManageProperties;

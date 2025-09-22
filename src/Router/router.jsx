@@ -24,6 +24,7 @@ import PropertyDetails from "../Pages/AllProperty/propertyDetails";
 
 import PrivateRoute from './../Routes/PrivateRoute';
 import MakeOffer from './../Pages/Dashboard/User/MakeOffer';
+import PaymentPage from "../Pages/Dashboard/User/PaymentPage";
 
 export const router = createBrowserRouter([
   {
@@ -84,6 +85,11 @@ export const router = createBrowserRouter([
         path: "user/property-bought",
         Component: PropertyBought
       },
+      {
+        path: "payment/:id",
+        Component: PaymentPage
+      },
+
       {
         path: "user/my-reviews",
         Component: MyReviews
