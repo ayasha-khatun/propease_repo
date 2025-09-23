@@ -37,7 +37,7 @@ const RequestedProperties = () => {
 
       if (res.data.modifiedCount > 0) {
         Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
-        fetchOffers(); // refresh all offers
+        fetchOffers(); 
       }
     } catch (err) {
       console.error("Accept error", err);
@@ -110,7 +110,7 @@ const RequestedProperties = () => {
                   </div>
                 )}
                 {offer.status === "accepted" && (
-                  <span className="text-green-600 font-semibold">Accepted</span>
+                  <span className="text-green-700 font-semibold">Accepted</span>
                 )}
                 {offer.status === "rejected" && (
                   <span className="text-red-500 font-semibold">Rejected</span>
@@ -123,5 +123,4 @@ const RequestedProperties = () => {
     </div>
   );
 };
-
 export default RequestedProperties;
