@@ -6,19 +6,33 @@ const MySoldProperties = () => {
   const { user } = useAuth(); // agent info
   const axiosSecure = useAxiosSecure();
   const [soldProperties, setSoldProperties] = useState([]);
+  const [totalSoldAmount, setTotalSoldAmount] = useState(0);
 
   useEffect(() => {
     if (user?.email) {
       axiosSecure
         .get(`/offers/sold/${user.email}`)
-        .then(res => setSoldProperties(res.data))
+        .then(res => {
+          setSoldProperties(res.data);
+
+          // Calculate total sold amount
+          const total = res.data.reduce((sum, offer) => sum + Number(offer.offerAmount), 0);
+          setTotalSoldAmount(total);
+        })
         .catch(err => console.error("Error fetching sold properties:", err));
     }
   }, [user?.email, axiosSecure]);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-center mb-6">My Sold Properties</h2>
+      <h2 className="text-2xl font-bold text-center mb-4">My Sold Properties</h2>
+
+      {/* Total sold amount */}
+      <div className="text-center mb-6">
+        <p className="text-lg font-semibold">
+          Total Sold Amount: <span className="text-green-600">${totalSoldAmount}</span>
+        </p>
+      </div>
 
       {soldProperties.length === 0 ? (
         <p className="text-center text-gray-500">No sold properties yet.</p>
