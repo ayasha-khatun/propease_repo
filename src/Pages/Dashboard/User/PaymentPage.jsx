@@ -36,15 +36,15 @@ const PaymentPage = () => {
     <div className="p-6 max-w-lg mx-auto bg-white shadow rounded">
       <h2 className="text-2xl font-bold mb-4">Payment Page</h2>
       <img
-        src={offer.image}
+        src={offer.propertyImage}
         alt={offer.title}
         className="w-full h-40 object-cover rounded"
       />
-      <h3 className="text-xl font-semibold mt-3">{offer.title}</h3>
-      <p className="text-gray-600">📍 {offer.location}</p>
+      <h3 className="text-xl font-semibold mt-3">{offer.propertyTitle}</h3>
+      <p className="text-gray-600">{offer.location}</p>
       <p className="text-gray-700">Agent: {offer.agentName}</p>
       <p className="text-blue-600 font-semibold mt-2">
-        💰 Offered: ${offer.offeredAmount}
+         Offered: ${offer.offerAmount}
       </p>
 
       {offer.status === "accepted" && !offer.transactionId && (
