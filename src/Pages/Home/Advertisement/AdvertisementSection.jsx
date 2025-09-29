@@ -35,9 +35,9 @@ const AdvertisementSection = () => {
               />
               <div className="p-4">
                 <h3 className="text-xl font-semibold mb-1">{property.title}</h3>
-                <p className="text-sm text-gray-600 mb-1">📍 {property.location}</p>
+                <p className="text-sm text-gray-600 mb-1">Location: {property.location}</p>
                 <p className="text-sm text-gray-800 font-medium mb-2">
-                  💰 {property.priceRange}
+                  Price-Range: {property.priceRange}
                 </p>
                 <Link
                   to={`/property-details/${property._id}`}

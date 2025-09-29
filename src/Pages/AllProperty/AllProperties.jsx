@@ -57,22 +57,25 @@ const AllPropertiesPage = () => {
               />
               <div className="p-4">
                 <h2 className="text-lg font-bold">{property.title}</h2>
-                <p className="text-gray-600">{property.location}</p>
-                <p className="mt-2">
-                  <strong>Agent:</strong> {property.agentName}
-                </p>
-                {property.agentImage && (
-                  <img
-                    src={property.agentImage}
-                    alt={property.agentName}
-                    className="h-10 w-10 rounded-full mt-1"
-                  />
-                )}
+                <p className="text-gray-600"><strong>Location:</strong>{property.location}</p>
+                
+                {/* Agent Info */}
+                <div className="flex items-center gap-2 mt-2">
+                  
+                    <img
+                      src={property.agentImage || "/default-avatar.png"}
+                      alt={property.agentName}
+                      className="h-8 w-8 rounded-full object-cover border"
+                    />
+                  
+                  <p className="font-medium">{property.agentName}</p>
+                </div>
+
                 <p className="mt-2">
                   <strong>Status:</strong> {property.verificationStatus}
                 </p>
                 <p className="mt-1">
-                  <strong>Price Range:</strong> ${property.minPrice} - ${property.maxPrice}
+                  <strong>Price Range:</strong> ${property.priceRange}
                 </p>
                 <button
                   onClick={() => goToDetails(property._id)}

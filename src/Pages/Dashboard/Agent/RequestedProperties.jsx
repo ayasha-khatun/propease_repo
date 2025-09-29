@@ -28,7 +28,7 @@ const RequestedProperties = () => {
     }
   }, [user?.email]);
 
-  // Accept offer
+  // Accept an offer
   const handleAccept = async (offerId, propertyId) => {
     try {
       const res = await axiosSecure.patch(`/offers/accept/${offerId}`, {
@@ -37,7 +37,17 @@ const RequestedProperties = () => {
 
       if (res.data.modifiedCount > 0) {
         Swal.fire("✅ Accepted!", "Offer has been accepted.", "success");
-        fetchOffers(); 
+
+        // Update frontend: accepted offer
+        setOffers((prev) =>
+          prev.map((offer) =>
+            offer._id === offerId
+              ? { ...offer, status: "accepted" }
+              : offer.propertyId === propertyId
+              ? { ...offer, status: "rejected" } // automatically reject other offers for same property
+              : offer
+          )
+        );
       }
     } catch (err) {
       console.error("Accept error", err);
@@ -45,13 +55,19 @@ const RequestedProperties = () => {
     }
   };
 
-  // Reject offer
+  // Reject an offer
   const handleReject = async (offerId) => {
     try {
       const res = await axiosSecure.patch(`/offers/reject/${offerId}`);
       if (res.data.modifiedCount > 0) {
         Swal.fire("❌ Rejected!", "Offer has been rejected.", "success");
-        fetchOffers();
+
+        // Update frontend
+        setOffers((prev) =>
+          prev.map((offer) =>
+            offer._id === offerId ? { ...offer, status: "rejected" } : offer
+          )
+        );
       }
     } catch (err) {
       console.error("Reject error", err);
@@ -109,9 +125,11 @@ const RequestedProperties = () => {
                     </button>
                   </div>
                 )}
+
                 {offer.status === "accepted" && (
-                  <span className="text-green-700 font-semibold">Accepted</span>
+                  <span className="text-green-500 font-semibold">Accepted</span>
                 )}
+
                 {offer.status === "rejected" && (
                   <span className="text-red-500 font-semibold">Rejected</span>
                 )}
@@ -123,4 +141,5 @@ const RequestedProperties = () => {
     </div>
   );
 };
+
 export default RequestedProperties;

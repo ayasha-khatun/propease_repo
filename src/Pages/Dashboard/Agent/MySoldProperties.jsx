@@ -37,11 +37,11 @@ const MySoldProperties = () => {
             <tbody>
               {soldProperties.map(offer => (
                 <tr key={offer._id} className="hover:bg-gray-50">
-                  <td>{offer.title}</td>
-                  <td>{offer.location}</td>
+                  <td>{offer.propertyTitle}</td>
+                  <td>{offer.propertyLocation}</td>
                   <td>{offer.buyerName}</td>
                   <td>{offer.buyerEmail}</td>
-                  <td>${offer.offeredAmount}</td>
+                  <td>${offer.offerAmount}</td>
                 </tr>
               ))}
             </tbody>

@@ -80,7 +80,7 @@ const ManageProperties = () => {
                   <td>{prop.location}</td>
                   <td>{prop.agentName}</td>
                   <td>{prop.agentEmail}</td>
-                  <td>${prop.minPrice} - ${prop.maxPrice}</td>
+                  <td>${prop.priceRange}</td>
                   <td>
                     {prop.verificationStatus === "pending" && "Pending"}
                     {prop.verificationStatus === "verified" && (

@@ -1,58 +1,93 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router';
-import useAuth from '../../../hooks/useAuth';
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
 
 const Navbar = () => {
-    const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
-    const handleLogout = () => {
-    logout()
-    .then(() => {
-      localStorage.removeItem('access-token');
+  const handleLogout = () => {
+    logout().then(() => {
+      localStorage.removeItem("access-token");
     });
-}
+  };
 
-    const navItems = <>
-        <li><NavLink to='/'>Home</NavLink></li>
-        <li><NavLink to='/all-properties'>All Properties</NavLink></li>
-        {
-            user && <>
-                <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
-            </>
-        }
+  const navItems = (
+    <>
+      <li>
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-semibold" : "hover:text-primary"
+          }
+        >
+          Home
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/all-properties"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-semibold" : "hover:text-primary"
+          }
+        >
+          All Properties
+        </NavLink>
+      </li>
+      {user && (
+        <li>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              isActive ? "text-primary font-semibold" : "hover:text-primary"
+            }
+          >
+            Dashboard
+          </NavLink>
+        </li>
+      )}
     </>
-    
-    return (
-        <div className="navbar bg-[#4682A9] text-white shadow-sm">
-            <div className="navbar-start">
-                <div className="dropdown">
-                <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
-                </div>
-                <ul
-                    tabIndex={0}
-                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                    {
-                        navItems
-                    }
-                </ul>
-                </div>
-                <a className="btn btn-ghost text-xl">daisyUI</a>
-            </div>
-            <div className="navbar-center hidden lg:flex">
-                <ul className="menu menu-horizontal px-1">
-                    {
-                        navItems
-                    }
-                </ul>
-            </div>
-            <div className="navbar-end">
-                { user ? 
-                 <button onClick={handleLogout} className='btn btn-primary text-white'>Logout</button>
-                : <Link to='/login' className='btn btn-primary'>Login</Link>}
-            </div>
-        </div>
-    );
+  );
+
+  return (
+    <div className="navbar bg-[#4682A9] text-white px-6 shadow-md fixed top-0 left-0 right-0 z-50 h-16">
+      {/* Left - Logo */}
+      <div className="navbar-start h-full">
+        <Link to="/" className="flex items-center h-full">
+          <img
+            src="https://i.ibb.co.com/ymC5YNfw/colored-logo.png"
+            alt="Propease Logo"
+            className="max-h-full w-auto" // navbar height maintain + logo boro
+          />
+        </Link>
+      </div>
+
+      {/* Center - Nav Items */}
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal space-x-4 font-medium">
+          {navItems}
+        </ul>
+      </div>
+
+      {/* Right - Auth Button */}
+      <div className="navbar-end">
+        {user ? (
+          <button
+            onClick={handleLogout}
+            className="btn btn-sm bg-primary border-none hover:bg-primary/80 text-white"
+          >
+            Logout
+          </button>
+        ) : (
+          <Link
+            to="/login"
+            className="btn btn-sm bg-primary border-none hover:bg-primary/80 text-white"
+          >
+            Login
+          </Link>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Navbar;

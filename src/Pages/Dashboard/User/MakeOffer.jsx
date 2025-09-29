@@ -99,7 +99,7 @@ const MakeOffer = () => {
         <input type="text" value={property.agentName} readOnly className="w-full border px-4 py-2 rounded bg-gray-100" />
         <input
           type="number"
-          placeholder={`Enter amount ($${property.minPrice} - $${property.maxPrice})`}
+          placeholder={`Enter amount ($${property.priceRange})`}
           className="w-full border px-4 py-2 rounded"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}

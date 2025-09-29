@@ -1,8 +1,8 @@
 // src/pages/user/PropertyBought.jsx
 import React, { useEffect, useState } from "react";
-import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useNavigate } from "react-router-dom";
+import useAuth from './../../../hooks/useAuth';
 
 const PropertyBought = () => {
   const { user } = useAuth();
@@ -44,11 +44,11 @@ const PropertyBought = () => {
                 alt={offer.title}
                 className="w-full h-40 object-cover rounded"
               />
-              <h3 className="text-xl font-semibold mt-3">{offer.title}</h3>
-              <p className="text-gray-600">📍 {offer.location}</p>
+              <h3 className="text-xl font-semibold mt-3">{offer.PropertyTitle}</h3>
+              <p className="text-gray-600"><strong>Location</strong> {offer.propertyLocation}</p>
               <p className="text-gray-700 font-medium">Agent: {offer.agentName}</p>
               <p className="text-blue-600 font-semibold mt-2">
-                💰 Offered: ${offer.offeredAmount}
+                Offered: ${offer.offeredAmount}
               </p>
 
               <p className="mt-1">

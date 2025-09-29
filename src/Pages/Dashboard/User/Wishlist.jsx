@@ -1,15 +1,17 @@
+// src/pages/Dashboard/Wishlist.jsx
 import { useEffect, useState } from "react";
-import useAuth from "../../../Hooks/useAuth";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from './../../../hooks/useAuth';
+import useAxiosSecure from './../../../hooks/useAxiosSecure';
 
 const Wishlist = () => {
   const { user } = useAuth();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const axiosSecure = useAxiosSecure(); // 🔹 token সহ axios instance
+  const axiosSecure = useAxiosSecure();
 
+  // ✅ Fetch Wishlist
   useEffect(() => {
     if (user?.email) {
       setLoading(true);
@@ -25,6 +27,7 @@ const Wishlist = () => {
     }
   }, [user?.email, axiosSecure]);
 
+  // ✅ Remove from Wishlist
   const handleDelete = (id) => {
     Swal.fire({
       title: "Remove from wishlist?",
@@ -68,20 +71,52 @@ const Wishlist = () => {
     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {wishlist.map((property) => (
         <div key={property._id} className="bg-white rounded-lg shadow-md p-4">
+          {/* 🖼️ Property Image */}
           <img
             src={property.image}
             alt={property.title}
             className="w-full h-48 object-cover rounded"
           />
+
+          {/* 📌 Title */}
           <h2 className="text-xl font-bold mt-2">{property.title}</h2>
-          <p className="text-gray-600">{property.location}</p>
-          <p className="text-green-600 mt-1">
-            Price: ${property.minPrice} - ${property.maxPrice}
+
+          {/* 📍 Location */}
+          <p className="text-gray-600 mt-1">Location: {property.location}</p>
+
+          {/* 👨 Agent Info */}
+          <div className="flex items-center gap-2 mt-2">
+            <img
+              src={property.agentPhoto || "/default-user.png"}
+              alt={property.agentName}
+              className="w-8 h-8 rounded-full object-cover border"
+            />
+            <p className="font-medium">Agent: {property.agentName}</p>
+          </div>
+
+          {/* ✅ Verification Status */}
+          <p className="mt-1 text-sm">
+            Status:{" "}
+            <span
+              className={`font-semibold ${
+                property.verificationStatus === "verified"
+                  ? "text-green-600"
+                  : property.verificationStatus === "pending"
+                  ? "text-yellow-600"
+                  : "text-red-500"
+              }`}
+            >
+              {property.verificationStatus}
+            </span>
           </p>
 
+          {/* 💰 Price Range */}
+          <p className="text-green-600 mt-1">Price: ${property.priceRange}</p>
+
+          {/* 🔘 Buttons */}
           <div className="flex gap-2 mt-4">
             <Link
-             to={`/dashboard/make-offer/${property.propertyId}`}
+              to={`/dashboard/make-offer/${property.propertyId}`}
               className="btn btn-sm btn-success flex-1"
             >
               Make Offer
