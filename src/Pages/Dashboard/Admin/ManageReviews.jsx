@@ -66,19 +66,13 @@ const ManageReviews = () => {
                   className="w-12 h-12 rounded-full mr-4 object-cover"
                 />
                 <div>
-                  <p className="font-semibold">{review.reviewerName || 'Anonymous'}</p>
-                  <p className="text-sm text-gray-500">{review.reviewerEmail || 'N/A'}</p>
+                  <p className="font-semibold">{review.displayName || 'Anonymous'}</p>
+                  <p className="text-sm text-gray-500">{review.userEmail || 'N/A'}</p>
                 </div>
               </div>
 
               <p className="mb-2 font-semibold">🏠 Property: {review.propertyTitle || 'Untitled Property'}</p>
               <p className="mb-1 text-gray-600">💬 {review.review || 'No review text.'}</p>
-              <p className="text-xs text-gray-400">
-                🕓 Reviewed on:{' '}
-                {review.reviewTime
-                  ? new Date(review.reviewTime).toLocaleDateString()
-                  : 'Unknown Date'}
-              </p>
 
               <button
                 onClick={() => handleDelete(review._id, review.reviewerEmail)}

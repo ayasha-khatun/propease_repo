@@ -6,7 +6,10 @@ import useAxiosSecure from './../../hooks/useAxiosSecure';
 
 const AllPropertiesPage = () => {
   const [properties, setProperties] = useState([]);
-  const { user } = useContext(AuthContext); // user info
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState(""); // asc | desc
+  const { user } = useContext(AuthContext); 
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
@@ -23,10 +26,11 @@ const AllPropertiesPage = () => {
       try {
         const res = await axiosSecure.get("/admin/verified-properties");
         setProperties(res.data);
+        setFilteredProperties(res.data);
       } catch (error) {
         if (error.response?.status === 403) {
           alert("Access denied: You need admin permissions to view these properties.");
-          navigate("/"); // redirect non-admins
+          navigate("/");
         } else {
           console.error("Failed to fetch properties:", error);
         }
@@ -36,6 +40,26 @@ const AllPropertiesPage = () => {
     if (user) fetchProperties();
   }, [user, axiosSecure, navigate]);
 
+  // Filter properties based on search term
+  useEffect(() => {
+    let updated = [...properties];
+
+    if (searchTerm) {
+      updated = updated.filter((p) =>
+        p.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sort by price range (minPrice)
+    if (sortOrder === "asc") {
+      updated.sort((a, b) => a.minPrice - b.minPrice);
+    } else if (sortOrder === "desc") {
+      updated.sort((a, b) => b.minPrice - a.minPrice);
+    }
+
+    setFilteredProperties(updated);
+  }, [searchTerm, sortOrder, properties]);
+
   const goToDetails = (id) => {
     navigate(`/property-details/${id}`);
   };
@@ -43,12 +67,35 @@ const AllPropertiesPage = () => {
   if (!user) return <p className="text-center mt-10">Please login to view properties.</p>;
 
   return (
-    <div className="p-4">
-      {properties.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10">No verified properties available.</p>
+    <div className="p-4 mt-20">
+    
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        {/* Search by location */}
+        <input
+          type="text"
+          placeholder="Search by location..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="input input-bordered w-full sm:w-1/2"
+        />
+
+        {/* Sort by price */}
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="select select-bordered w-full sm:w-1/4"
+        >
+          <option value="">Sort by price</option>
+          <option value="asc">Lowest to Highest</option>
+          <option value="desc">Highest to Lowest</option>
+        </select>
+      </div>
+
+      {filteredProperties.length === 0 ? (
+        <p className="text-center text-gray-500 mt-10">No verified properties found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
+          {filteredProperties.map((property) => (
             <div key={property._id} className="card shadow-md rounded-lg overflow-hidden">
               <img
                 src={property.image}
@@ -57,17 +104,17 @@ const AllPropertiesPage = () => {
               />
               <div className="p-4">
                 <h2 className="text-lg font-bold">{property.title}</h2>
-                <p className="text-gray-600"><strong>Location:</strong>{property.location}</p>
-                
+                <p className="text-gray-600">
+                  <strong>Location:</strong> {property.location}
+                </p>
+
                 {/* Agent Info */}
                 <div className="flex items-center gap-2 mt-2">
-                  
-                    <img
-                      src={property.agentImage || "/default-avatar.png"}
-                      alt={property.agentName}
-                      className="h-8 w-8 rounded-full object-cover border"
-                    />
-                  
+                  <img
+                    src={property.agentImage || "/default-avatar.png"}
+                    alt={property.agentName}
+                    className="h-8 w-8 rounded-full object-cover border"
+                  />
                   <p className="font-medium">{property.agentName}</p>
                 </div>
 
