@@ -52,12 +52,14 @@ const PropertyDetails = () => {
   image: property.image,
   title: property.title,
   priceRange: property.priceRange,
-  agentName: property.agentName,
-  agentEmail: property.agentEmail,
-  location: property.location,
-  agentPhoto: property.agentPhoto || "/default-user.png", 
-  verificationStatus: property.verificationStatus,
+  agentName: property.agentName || "Unknown Agent",
+  agentEmail: property.agentEmail || "",
+  location: property.location || "Not Provided",
+  agentPhoto: property.agentPhoto || "/default-user.png",
+  verificationStatus: property.verificationStatus || "pending",
 };
+console.log("Final WishlistItem:", wishlistItem);
+
 
     axiosSecure
       .post("/wishlist", wishlistItem)

@@ -33,22 +33,22 @@ const PropertyBought = () => {
           You haven't made any offers yet.
         </p>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {offers.map(offer => (
             <div
               key={offer._id}
-              className="bg-white shadow-md rounded-lg p-4 flex flex-col"
+              className="bg-white shadow-md rounded-lg p-2 flex flex-col"
             >
               <img
-                src={offer.image}
+                src={offer.propertyImage}
                 alt={offer.title}
                 className="w-full h-40 object-cover rounded"
               />
-              <h3 className="text-xl font-semibold mt-3">{offer.PropertyTitle}</h3>
+              <h3 className="text-xl font-semibold mt-3">{offer.propertyTitle}</h3>
               <p className="text-gray-600"><strong>Location</strong> {offer.propertyLocation}</p>
               <p className="text-gray-700 font-medium">Agent: {offer.agentName}</p>
               <p className="text-blue-600 font-semibold mt-2">
-                Offered: ${offer.offeredAmount}
+                Offered: ${offer.offerAmount}
               </p>
 
               <p className="mt-1">

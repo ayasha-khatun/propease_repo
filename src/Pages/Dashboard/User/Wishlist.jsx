@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import useAuth from './../../../hooks/useAuth';
-import useAxiosSecure from './../../../hooks/useAxiosSecure';
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Wishlist = () => {
   const { user } = useAuth();
@@ -111,7 +111,7 @@ const Wishlist = () => {
           </p>
 
           {/* 💰 Price Range */}
-          <p className="text-green-600 mt-1">Price: ${property.priceRange}</p>
+          <p className="text-green-600 mt-1">Price Range: {property.priceRange}</p>
 
           {/* 🔘 Buttons */}
           <div className="flex gap-2 mt-4">
