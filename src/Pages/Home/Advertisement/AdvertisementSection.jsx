@@ -7,7 +7,7 @@ const AdvertisementSection = () => {
   const [ads, setAds] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/advertised-properties") // ✅ public route
+    axios.get("https://propease-server-side.vercel.app/advertised-properties") // ✅ public route
       .then(res => {
         const firstFour = res.data.slice(0, 4);
         setAds(firstFour);

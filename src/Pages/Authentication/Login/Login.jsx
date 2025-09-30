@@ -17,7 +17,7 @@ const Login = () => {
   // 💡 Function to get JWT from backend
   const getJwtToken = async (email) => {
     try {
-      const response = await axios.post('http://localhost:5000/jwt', { email });
+      const response = await axios.post('https://propease-server-side.vercel.app/jwt', { email });
       localStorage.setItem('access-token', response.data.token); // store token
     } catch (err) {
       console.error('JWT request failed:', err);

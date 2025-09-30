@@ -40,10 +40,10 @@ const Register = () => {
 
       // ✅ Save to MongoDB
       const userData = { name, email, photo, role: 'user' };
-      await axios.put(`http://localhost:5000/users/${email}`, userData);
+      await axios.put(`https://propease-server-side.vercel.app/users/${email}`, userData);
 
       // ✅ Get JWT Token
-      const tokenRes = await axios.post('http://localhost:5000/jwt', { email });
+      const tokenRes = await axios.post('https://propease-server-side.vercel.app/jwt', { email });
       localStorage.setItem('access-token', tokenRes.data.token);
 
       // ✅ Show Success

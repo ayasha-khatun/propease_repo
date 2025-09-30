@@ -10,7 +10,7 @@ const useRole = () => {
   useEffect(() => {
     if (user?.email) {
       axios
-        .get(`http://localhost:5000/users/role/${user.email}`)
+        .get(`https://propease-server-side.vercel.app/users/role/${user.email}`)
         .then((res) => {
           setRole(res.data.role);
           setLoading(false);

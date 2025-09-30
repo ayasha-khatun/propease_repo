@@ -19,7 +19,7 @@ const AuthProvider = ({ children }) => {
   // ✅ Get JWT from backend and store in localStorage
   const getJwtAndStore = async (email) => {
     try {
-      const res = await fetch('http://localhost:5000/jwt', {
+      const res = await fetch('https://propease-server-side.vercel.app/jwt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

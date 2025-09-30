@@ -5,7 +5,7 @@ const LatestReviews = () => {
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/reviews/latest')
+    axios.get('https://propease-server-side.vercel.app/reviews/latest')
       .then(res => setReviews(res.data.slice(0, 3))) // only show 3 latest
       .catch(err => console.error('Failed to fetch latest reviews:', err));
   }, []);
