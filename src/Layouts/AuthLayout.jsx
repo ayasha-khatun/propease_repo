@@ -5,9 +5,13 @@ import authImg from '../assets/authImg.png'
 
 const AuthLayout = () => {
     return (
-        <div className="p-12 bg-base-200 min-h-screen">
+        <div className="p-12 bg-black min-h-screen">
             <div>
-                logo
+               <img
+            src="https://i.ibb.co.com/ymC5YNfw/colored-logo.png"
+            alt="Propease Logo"
+            className="w-30 h-30"
+          />
             </div>
             <div className="hero-content flex-col lg:flex-row-reverse">
                 <div className='flex-1'>

@@ -8,7 +8,7 @@ import CustomerTestimonials from '../FeaturedAgents/CustomerTestimonials';
 
 const Home = () => {
     return (
-        <div>
+        <div className='mt-10'>
             <Banner></Banner>
             <AdvertisementSection></AdvertisementSection>
             <LatestReviews></LatestReviews>

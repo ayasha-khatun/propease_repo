@@ -56,7 +56,7 @@ const Navbar = () => {
           <img
             src="https://i.ibb.co.com/ymC5YNfw/colored-logo.png"
             alt="Propease Logo"
-            className="max-h-full w-auto" // navbar height maintain + logo boro
+            className="w-30 h-30"
           />
         </Link>
       </div>
@@ -68,15 +68,30 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Right - Auth Button */}
-      <div className="navbar-end">
+      {/* Right - User Info & Auth */}
+      <div className="navbar-end flex items-center gap-4">
         {user ? (
-          <button
-            onClick={handleLogout}
-            className="btn btn-sm bg-primary border-none hover:bg-primary/80 text-white"
-          >
-            Logout
-          </button>
+          <>
+            {/* Profile Picture */}
+            <img
+              src={user.photoURL || "/default-avatar.png"}
+              alt={user.displayName || "User"}
+              className="w-10 h-10 rounded-full border-2 border-white object-cover"
+            />
+
+            {/* User Name */}
+            <span className="font-medium hidden sm:block">
+              {user.displayName || "User"}
+            </span>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="btn btn-sm bg-red-500 border-none hover:bg-red-600 text-white"
+            >
+              Logout
+            </button>
+          </>
         ) : (
           <Link
             to="/login"

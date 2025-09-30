@@ -25,11 +25,13 @@ import PropertyDetails from "../Pages/AllProperty/propertyDetails";
 import PrivateRoute from './../Routes/PrivateRoute';
 import MakeOffer from './../Pages/Dashboard/User/MakeOffer';
 import PaymentPage from "../Pages/Dashboard/User/PaymentPage";
+import NotFound from './../Pages/NotFound/NotFound';
 
 export const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayouts,
+    errorElement:<NotFound></NotFound>,
     children: [
       {
         index: true,
@@ -43,9 +45,11 @@ export const router = createBrowserRouter([
         path: "property-details/:id",
         Component: PropertyDetails
       },
+     
       
     ]
   },
+  
   {
     path: "/",
     Component: AuthLayout,
@@ -67,6 +71,7 @@ export const router = createBrowserRouter([
         <DashboardLayout />
       </PrivateRoute>
     ),
+    errorElement:<NotFound></NotFound>,
     children: [
       // ✅ User Routes
       {
@@ -137,7 +142,8 @@ export const router = createBrowserRouter([
       {
         path: "admin/advertise",
         Component: AdvertiseProperty
-      }
+      },
+      
     ]
   }
 ]);
