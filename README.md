@@ -8,7 +8,7 @@ Password: Ay@sha
 
 Live Site: https://propease-baa74.web.app/
 👤 Demo Agent Access
-Email: yasmin@gmail.com
+Email: jasmin@gmail.com
 
 Password: Ay@sha
 
