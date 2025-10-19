@@ -13,12 +13,7 @@ const AllPropertiesPage = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
+  
 
   // Fetch verified properties
   useEffect(() => {
@@ -64,7 +59,6 @@ const AllPropertiesPage = () => {
     navigate(`/property-details/${id}`);
   };
 
-  if (!user) return <p className="text-center mt-10">Please login to view properties.</p>;
 
   return (
     <div className="p-4 mt-20">
@@ -105,7 +99,7 @@ const AllPropertiesPage = () => {
               <div className="p-4">
                 <h2 className="text-lg font-bold">{property.title}</h2>
                 <p className="text-gray-600">
-                  <strong>Location:</strong> {property.location}
+                  {property.location}
                 </p>
 
                 {/* Agent Info */}
@@ -119,14 +113,14 @@ const AllPropertiesPage = () => {
                 </div>
 
                 <p className="mt-2">
-                  <strong>Status:</strong> {property.verificationStatus}
+                   {property.verificationStatus}
                 </p>
                 <p className="mt-1">
-                  <strong>Price Range:</strong> ${property.priceRange}
+                   ${property.priceRange}
                 </p>
                 <button
                   onClick={() => goToDetails(property._id)}
-                  className="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="mt-3 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                   Details
                 </button>

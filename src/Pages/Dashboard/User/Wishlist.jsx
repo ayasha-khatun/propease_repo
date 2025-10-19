@@ -117,13 +117,13 @@ const Wishlist = () => {
           <div className="flex gap-2 mt-4">
             <Link
               to={`/dashboard/make-offer/${property.propertyId}`}
-              className="btn btn-sm btn-success flex-1"
+              className="btn bg-gradient-to-r from-primary to-secondary flex-1"
             >
               Make Offer
             </Link>
             <button
               onClick={() => handleDelete(property._id)}
-              className="btn btn-sm btn-error flex-1"
+              className="btn bg-gradient-to-r from-primary to-secondary flex-1"
             >
               Remove
             </button>

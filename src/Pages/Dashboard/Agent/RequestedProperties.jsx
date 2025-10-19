@@ -112,7 +112,7 @@ const RequestedProperties = () => {
                 {(!offer.status || offer.status === "pending") && (
                   <div className="flex gap-2">
                     <button
-                      className="btn btn-xs btn-success"
+                      className="btn bg-gradient-to-r from-primary to-secondary"
                       onClick={() => handleAccept(offer._id, offer.propertyId)}
                     >
                       Accept

@@ -5,15 +5,21 @@ import LatestReviews from '../LatestReviews/LatestReviews';
 import WhyChooseUs from '../WhyChooseUs/WhyChooseUs';
 import FeaturedAgents from '../FeaturedAgents/CustomerTestimonials';
 import CustomerTestimonials from '../FeaturedAgents/CustomerTestimonials';
+import OurPartnersSection from '../OurPartnersSection/OurPartnersSection';
+import AboutUsSection from '../AboutUsSection/AboutUsSection';
+import FAQSection from '../FAQSection/FAQSection';
 
 const Home = () => {
     return (
         <div className='mt-10'>
             <Banner></Banner>
             <AdvertisementSection></AdvertisementSection>
-            <LatestReviews></LatestReviews>
+            <AboutUsSection></AboutUsSection>
+            <OurPartnersSection></OurPartnersSection>
             <WhyChooseUs></WhyChooseUs>
+            <LatestReviews></LatestReviews>
             <CustomerTestimonials></CustomerTestimonials>
+            <FAQSection></FAQSection>
         </div>
     );
 };

@@ -2,14 +2,14 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import banner1 from '../../../assets/banner1.jpg';
-import banner2 from '../../../assets/banner2.jpg';
-import banner3 from '../../../assets/banner3.jpg';
+import banner2 from '../../../assets/banner.png';
+import banner3 from '../../../assets/banner2.png';
+import banner from '../../../assets/banner3.png';
 
 const banners = [
   {
     id: 1,
-    image: banner1,
+    image: banner,
     title: 'Unlock Your New Address',
     subtitle: 'Discover verified properties tailored to your lifestyle.',
   },
@@ -29,8 +29,9 @@ const banners = [
 
 const BannerSlider = () => {
   return (
-    <div className="w-full rounded-xl overflow-hidden mb-10">
-      <Swiper
+    <div className="w-full pb-8 overflow-hidden">
+      <div className='max-w-7xl mx-auto px-4'>
+        <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
@@ -40,7 +41,7 @@ const BannerSlider = () => {
         {banners.map((banner) => (
           <SwiperSlide key={banner.id} className="relative">
             <div
-              className="min-h-[80vh] w-full flex flex-col justify-center items-center text-center relative"
+              className="min-h-[80vh] rounded-mdnpm w-full flex flex-col justify-center items-center text-center relative"
               style={{
                 backgroundImage: `url(${banner.image})`,
                 backgroundSize: 'cover',
@@ -64,6 +65,7 @@ const BannerSlider = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+      </div>
     </div>
   );
 };

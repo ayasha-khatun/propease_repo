@@ -110,7 +110,7 @@ const MyProperties = () => {
                 {property.verificationStatus !== "rejected" && (
                   <button
                     onClick={() => openUpdateModal(property)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                    className="bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded"
                   >
                     Update
                   </button>
@@ -204,7 +204,7 @@ const MyProperties = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-3 py-1 rounded bg-blue-500 text-white"
+                  className="px-3 py-1 rounded bg-gradient-to-r from-primary to-secondary text-white"
                 >
                   Submit
                 </button>

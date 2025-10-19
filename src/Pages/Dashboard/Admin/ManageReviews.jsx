@@ -76,7 +76,7 @@ const ManageReviews = () => {
 
               <button
                 onClick={() => handleDelete(review._id, review.reviewerEmail)}
-                className="mt-3 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
+                className="mt-3 bg-gradient-to-r from-primary to-secondary text-white px-4 py-1 rounded"
               >
                 Delete Review
               </button>

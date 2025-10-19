@@ -86,6 +86,9 @@ const DashboardLayout = () => {
           {/* User Menu */}
           {role === "user" && (
             <>
+            <li>
+                <NavLink to="/dashboard/user/dashboard">User Dashboard</NavLink>
+              </li>
               <li>
                 <NavLink to="/dashboard/user/profile">My Profile</NavLink>
               </li>
@@ -106,9 +109,13 @@ const DashboardLayout = () => {
           {/* Agent Menu */}
           {role === "agent" && (
             <>
+             <li>
+                <NavLink to="/dashboard/agent/dashboard">Agent Dashboard</NavLink>
+              </li>
               <li>
                 <NavLink to="/dashboard/agent/profile">Agent Profile</NavLink>
               </li>
+             
               <li>
                 <NavLink to="/dashboard/agent/add-property">Add Property</NavLink>
               </li>
@@ -131,9 +138,13 @@ const DashboardLayout = () => {
           {/* Admin Menu */}
           {role === "admin" && (
             <>
+            <li>
+                <NavLink to="/dashboard/admin/dashboard">Admin Dashboard</NavLink>
+              </li>
               <li>
                 <NavLink to="/dashboard/admin/profile">Admin Profile</NavLink>
               </li>
+              
               <li>
                 <NavLink to="/dashboard/admin/manage-users">Manage Users</NavLink>
               </li>

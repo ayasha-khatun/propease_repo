@@ -1,14 +1,14 @@
-import React from "react";
+// src/components/Shared/Navbar.jsx
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout().then(() => {
-      localStorage.removeItem("access-token");
-    });
+    logout().then(() => localStorage.removeItem("access-token"));
   };
 
   const navItems = (
@@ -17,7 +17,9 @@ const Navbar = () => {
         <NavLink
           to="/"
           className={({ isActive }) =>
-            isActive ? "text-primary font-semibold" : "hover:text-primary"
+            isActive
+              ? "text-primary font-bold"
+              : "hover:text-primary transition-colors"
           }
         >
           Home
@@ -27,10 +29,24 @@ const Navbar = () => {
         <NavLink
           to="/all-properties"
           className={({ isActive }) =>
-            isActive ? "text-primary font-semibold" : "hover:text-primary"
+            isActive
+              ? "text-primary font-bold"
+              : "hover:text-primary transition-colors"
           }
         >
           All Properties
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/contact"
+          className={({ isActive }) =>
+            isActive
+              ? "text-primary font-bold"
+              : "hover:text-primary transition-colors"
+          }
+        >
+          Contact
         </NavLink>
       </li>
       {user && (
@@ -38,7 +54,9 @@ const Navbar = () => {
           <NavLink
             to="/dashboard"
             className={({ isActive }) =>
-              isActive ? "text-primary font-semibold" : "hover:text-primary"
+              isActive
+                ? "text-primary font-bold"
+                : "hover:text-primary transition-colors"
             }
           >
             Dashboard
@@ -49,59 +67,72 @@ const Navbar = () => {
   );
 
   return (
-    <div className="navbar bg-[#4682A9] text-white px-6 shadow-md fixed top-0 left-0 right-0 z-50 h-16">
-      {/* Left - Logo */}
-      <div className="navbar-start h-full">
-        <Link to="/" className="flex items-center h-full">
-          <img
-            src="https://i.ibb.co.com/ymC5YNfw/colored-logo.png"
-            alt="Propease Logo"
-            className="w-30 h-30"
-          />
-        </Link>
+    <>
+      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="navbar h-16 flex justify-between items-center">
+            {/* Logo */}
+            <div className="navbar-start">
+              <Link to="/" className="text-3xl font-bold text-primary">
+                LOGO
+              </Link>
+            </div>
+
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex navbar-center">
+              <ul className="menu menu-horizontal space-x-4">{navItems}</ul>
+            </div>
+
+            {/* Right Section */}
+            <div className="navbar-end flex items-center gap-3">
+              {/* Mobile Hamburger */}
+              <div className="lg:hidden">
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="px-3 py-1 rounded border bg-gray-200 text-black"
+                >
+                  ☰
+                </button>
+              </div>
+
+              {/* Auth Buttons */}
+              {user ? (
+                <>
+                  <img
+                    src={user.photoURL || "/default-avatar.png"}
+                    alt={user.displayName || "User"}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-primary hidden sm:block"
+                  />
+                  <button
+                    onClick={handleLogout}
+                    className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                >
+                  Login
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden mt-2 p-4 bg-gray-100 rounded">
+              <ul className="flex flex-col gap-3">{navItems}</ul>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Center - Nav Items */}
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal space-x-4 font-medium">
-          {navItems}
-        </ul>
-      </div>
-
-      {/* Right - User Info & Auth */}
-      <div className="navbar-end flex items-center gap-4">
-        {user ? (
-          <>
-            {/* Profile Picture */}
-            <img
-              src={user.photoURL || "/default-avatar.png"}
-              alt={user.displayName || "User"}
-              className="w-10 h-10 rounded-full border-2 border-white object-cover"
-            />
-
-            {/* User Name */}
-            <span className="font-medium hidden sm:block">
-              {user.displayName || "User"}
-            </span>
-
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              className="btn btn-sm bg-red-500 border-none hover:bg-red-600 text-white"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link
-            to="/login"
-            className="btn btn-sm bg-primary border-none hover:bg-primary/80 text-white"
-          >
-            Login
-          </Link>
-        )}
-      </div>
-    </div>
+      {/* Spacer */}
+      <div className="h-16" />
+    </>
   );
 };
 

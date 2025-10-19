@@ -48,7 +48,7 @@ const PaymentPage = () => {
       </p>
 
       {offer.status === "accepted" && !offer.transactionId && (
-        <button onClick={handlePayment} className="btn btn-primary w-full mt-4">
+        <button onClick={handlePayment} className="btn bg-gradient-to-r from-primary to-secondary w-full mt-4">
           Pay Now
         </button>
       )}

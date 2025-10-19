@@ -109,7 +109,7 @@ const handleGoogleLogin = async () => {
           {errors.password && <p className="text-red-500 mt-1 text-sm">{errors.password.message}</p>}
         </div>
 
-        <button className="btn btn-neutral w-full mt-4">Login</button>
+        <button className="btn bg-gradient-to-r from-primary to-secondary w-full mt-4">Login</button>
 
         <div className="mt-4 text-sm text-center">
           <p>Don’t have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a></p>

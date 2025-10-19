@@ -26,6 +26,10 @@ import PrivateRoute from './../Routes/PrivateRoute';
 import MakeOffer from './../Pages/Dashboard/User/MakeOffer';
 import PaymentPage from "../Pages/Dashboard/User/PaymentPage";
 import NotFound from './../Pages/NotFound/NotFound';
+import AdminOverview from './../Pages/Dashboard/Admin/AdminOverview';
+import AgentOverview from "../Pages/Dashboard/Agent/AgentOverview";
+import UserOverview from "../Pages/Dashboard/User/UserOverview";
+import Contact from "../Pages/Contact/Contact";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "property-details/:id",
         Component: PropertyDetails
+      },
+      {
+        path: "contact",
+        Component: Contact
       },
      
       
@@ -75,6 +83,10 @@ export const router = createBrowserRouter([
     children: [
       // ✅ User Routes
       {
+        path: "user/dashboard",
+        Component: UserOverview
+      },
+      {
         path: "user/profile",
         Component: MyProfile
       },
@@ -102,6 +114,10 @@ export const router = createBrowserRouter([
 
       // ✅ Agent Routes
       {
+        path: "agent/dashboard",
+        Component: AgentOverview
+      },
+      {
         path: "agent/profile",
         Component: AgentProfile
       },
@@ -126,6 +142,10 @@ export const router = createBrowserRouter([
       {
         path: "admin/profile",
         Component: AdminProfile
+      },
+      {
+        path: "admin/dashboard",
+        Component: AdminOverview
       },
       {
         path: "admin/manage-users",

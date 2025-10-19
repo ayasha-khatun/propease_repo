@@ -11,10 +11,11 @@ const LatestReviews = () => {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="text-3xl font-bold text-center mb-8">🗣️ Latest User Reviews</h2>
+    <div className="w-full bg-gray-50 py-10">
+      <h2 className="text-4xl font-bold text-center mb-8">🗣️ Latest User Reviews</h2>
 
-      {reviews.length === 0 ? (
+      <div className='max-w-7xl mx-auto px-4'>
+        {reviews.length === 0 ? (
         <p className="text-center text-gray-500">No reviews available.</p>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,6 +40,7 @@ const LatestReviews = () => {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 };

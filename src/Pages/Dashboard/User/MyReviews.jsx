@@ -78,7 +78,7 @@ const MyReviews = () => {
               <p className="mt-2">{review.review}</p>
               <button
                 onClick={() => handleDelete(review._id)}
-                className="mt-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                className="mt-3 bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded"
               >
                 Delete
               </button>

@@ -60,7 +60,7 @@ const ReviewModal = ({ propertyId, propertyTitle, user, setShowModal, refresh })
             </button>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+              className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-1 rounded hover:bg-blue-700"
             >
               Submit
             </button>

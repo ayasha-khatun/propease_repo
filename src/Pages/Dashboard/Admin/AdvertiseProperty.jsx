@@ -97,11 +97,11 @@ const AdvertiseProperty = () => {
                 <td>{item.agentName}</td>
                 <td>
                   {item.isAdvertised ? (
-                    <span className="text-green-600 font-medium">
+                    <span className="text-blue-600 font-medium">
                       Advertised
                     </span>
                   ) : (
-                    <span className="text-yellow-600 font-medium">
+                    <span className="text-blue-600 font-medium">
                       Not Yet
                     </span>
                   )}
@@ -110,7 +110,7 @@ const AdvertiseProperty = () => {
                   <button
                     disabled={item.isAdvertised}
                     onClick={() => handleAdvertise(item._id)}
-                    className="btn btn-sm btn-primary disabled:opacity-50"
+                    className="btn bg-gradient-to-r from-primary to-secondary disabled:opacity-50"
                   >
                     {item.isAdvertised ? "Advertised" : "Advertise"}
                   </button>

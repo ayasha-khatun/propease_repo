@@ -93,14 +93,14 @@ const ManageProperties = () => {
                   <td>
                     <div className="flex gap-2">
                       <button
-                        className="btn btn-sm btn-success"
+                        className="btn bg-gradient-to-r from-primary to-secondary"
                         onClick={() => handleVerify(prop._id)}
                         disabled={prop.verificationStatus !== "pending"}
                       >
                         Verify
                       </button>
                       <button
-                        className="btn btn-sm btn-error"
+                        className="btn bg-gradient-to-r from-primary to-secondary"
                         onClick={() => handleReject(prop._id)}
                         disabled={prop.verificationStatus !== "pending"}
                       >
