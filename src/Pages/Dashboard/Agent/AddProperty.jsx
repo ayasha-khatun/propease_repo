@@ -156,7 +156,7 @@ const AddProperty = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="btn bg-gradient-to-r from-primary to-secondary w-full mt-6"
+          className="btn text-white bg-gradient-to-r from-primary to-secondary w-full mt-6"
           disabled={loading}
         >
           {loading ? 'Adding...' : 'Add Property'}

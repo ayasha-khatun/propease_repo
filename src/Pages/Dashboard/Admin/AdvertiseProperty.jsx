@@ -1,4 +1,3 @@
-// src/pages/Dashboard/Admin/AdvertiseProperty.jsx
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
@@ -23,9 +22,11 @@ const AdvertiseProperty = () => {
   const handleAdvertise = async (id) => {
     const confirm = await Swal.fire({
       title: "Advertise this property?",
+      text: "This property will be shown in the advertised section.",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Advertise",
+      cancelButtonText: "Cancel",
     });
 
     if (confirm.isConfirmed) {
@@ -34,7 +35,7 @@ const AdvertiseProperty = () => {
           `/admin/properties/${id}/advertise`
         );
         if (res.data.modifiedCount > 0) {
-          Swal.fire("Success", "Property advertised successfully", "success");
+          Swal.fire("Success!", "Property advertised successfully ✅", "success");
           setProperties((prev) =>
             prev.map((p) =>
               p._id === id ? { ...p, isAdvertised: true } : p
@@ -50,7 +51,9 @@ const AdvertiseProperty = () => {
   // ✅ Loading State
   if (loading) {
     return (
-      <p className="text-center mt-10 text-lg font-medium">Loading...</p>
+      <p className="text-center mt-10 text-lg font-medium text-gray-600">
+        Loading properties...
+      </p>
     );
   }
 
@@ -65,12 +68,13 @@ const AdvertiseProperty = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-6">
+      <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">
         Advertise Verified Properties
       </h2>
+
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th>#</th>
               <th>Image</th>
@@ -89,19 +93,19 @@ const AdvertiseProperty = () => {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-16 h-12 object-cover rounded"
+                    className="w-16 h-12 object-cover rounded-md border"
                   />
                 </td>
-                <td>{item.title}</td>
+                <td className="font-medium">{item.title}</td>
                 <td>{item.priceRange}</td>
                 <td>{item.agentName}</td>
                 <td>
                   {item.isAdvertised ? (
-                    <span className="text-blue-600 font-medium">
+                    <span className="badge badge-success text-white px-3 py-1">
                       Advertised
                     </span>
                   ) : (
-                    <span className="text-blue-600 font-medium">
+                    <span className="badge badge-error text-white px-3 py-1">
                       Not Yet
                     </span>
                   )}
@@ -110,7 +114,11 @@ const AdvertiseProperty = () => {
                   <button
                     disabled={item.isAdvertised}
                     onClick={() => handleAdvertise(item._id)}
-                    className="btn bg-gradient-to-r from-primary to-secondary disabled:opacity-50"
+                    className={`btn btn-xs text-white ${
+                      item.isAdvertised
+                        ? "btn-disabled bg-gray-400"
+                        : "bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary"
+                    }`}
                   >
                     {item.isAdvertised ? "Advertised" : "Advertise"}
                   </button>

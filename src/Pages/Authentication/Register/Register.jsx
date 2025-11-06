@@ -132,6 +132,7 @@ const Register = () => {
           Login
         </a>
       </p>
+      
     </div>
   );
 };

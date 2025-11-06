@@ -1,25 +1,23 @@
 // src/pages/Properties/AllPropertiesPage.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from './../../Contexts/AuthContext/AuthContext';
-import useAxiosSecure from './../../hooks/useAxiosSecure';
+import { AuthContext } from "./../../Contexts/AuthContext/AuthContext";
+import useAxiosSecure from "./../../hooks/useAxiosSecure";
 
-const AllPropertiesPage = () => {
+const AllProperties = () => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState(""); // asc | desc
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-
-  
 
   // Fetch verified properties
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await axiosSecure.get("/admin/verified-properties");
+        const res = await axiosSecure.get("/verified-properties");
         setProperties(res.data);
         setFilteredProperties(res.data);
       } catch (error) {
@@ -32,24 +30,33 @@ const AllPropertiesPage = () => {
       }
     };
 
-    if (user) fetchProperties();
+    fetchProperties();
   }, [user, axiosSecure, navigate]);
 
-  // Filter properties based on search term
+  // Filter + Sort
   useEffect(() => {
     let updated = [...properties];
 
+    // ✅ Filter by location
     if (searchTerm) {
       updated = updated.filter((p) =>
-        p.location.toLowerCase().includes(searchTerm.toLowerCase())
+        p.location?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Sort by price range (minPrice)
+    // ✅ Sort by min price (extracted from "1000-2000")
     if (sortOrder === "asc") {
-      updated.sort((a, b) => a.minPrice - b.minPrice);
+      updated.sort((a, b) => {
+        const minA = parseInt(a.priceRange?.split("-")[0]);
+        const minB = parseInt(b.priceRange?.split("-")[0]);
+        return minA - minB;
+      });
     } else if (sortOrder === "desc") {
-      updated.sort((a, b) => b.minPrice - a.minPrice);
+      updated.sort((a, b) => {
+        const minA = parseInt(a.priceRange?.split("-")[0]);
+        const minB = parseInt(b.priceRange?.split("-")[0]);
+        return minB - minA;
+      });
     }
 
     setFilteredProperties(updated);
@@ -59,10 +66,8 @@ const AllPropertiesPage = () => {
     navigate(`/property-details/${id}`);
   };
 
-
   return (
     <div className="p-4 mt-20">
-    
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
         {/* Search by location */}
         <input
@@ -89,48 +94,56 @@ const AllPropertiesPage = () => {
         <p className="text-center text-gray-500 mt-10">No verified properties found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProperties.map((property) => (
-            <div key={property._id} className="card shadow-md rounded-lg overflow-hidden">
-              <img
-                src={property.image}
-                alt={property.title}
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-lg font-bold">{property.title}</h2>
-                <p className="text-gray-600">
-                  {property.location}
-                </p>
+          {filteredProperties.map((property) => {
+            const [minPrice, maxPrice] = property.priceRange
+              ?.split("-")
+              .map((p) => p.trim());
 
-                {/* Agent Info */}
-                <div className="flex items-center gap-2 mt-2">
-                  <img
-                    src={property.agentImage || "/default-avatar.png"}
-                    alt={property.agentName}
-                    className="h-8 w-8 rounded-full object-cover border"
-                  />
-                  <p className="font-medium">{property.agentName}</p>
+            return (
+              <div
+                key={property._id}
+                className="card shadow-md rounded-lg overflow-hidden"
+              >
+                <img
+                  src={property.image}
+                  alt={property.title}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-4">
+                  <h2 className="text-lg font-bold">{property.title}</h2>
+                  <p className="text-gray-600">{property.location}</p>
+
+                  {/* Agent Info */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <img
+                      src={property.agentImage || "/default-avatar.png"}
+                      alt={property.agentName}
+                      className="h-8 w-8 rounded-full object-cover border"
+                    />
+                    <p className="font-medium">{property.agentName}</p>
+                  </div>
+
+                  <p className="mt-2">{property.verificationStatus}</p>
+
+                  {/* ✅ Display price range properly */}
+                  <p className="mt-1 font-semibold">
+                    ${minPrice} - ${maxPrice}
+                  </p>
+
+                  <button
+                    onClick={() => goToDetails(property._id)}
+                    className="mt-3 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded hover:opacity-90"
+                  >
+                    Details
+                  </button>
                 </div>
-
-                <p className="mt-2">
-                   {property.verificationStatus}
-                </p>
-                <p className="mt-1">
-                   ${property.priceRange}
-                </p>
-                <button
-                  onClick={() => goToDetails(property._id)}
-                  className="mt-3 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Details
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
   );
 };
 
-export default AllPropertiesPage;
+export default AllProperties;

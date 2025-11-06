@@ -5,6 +5,7 @@ import SocialLogin from '../SocialLogin/SocialLogin';
 import { useLocation, useNavigate } from 'react-router';
 import useAuth from '../../../hooks/useAuth';
 import axios from 'axios';
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -109,11 +110,16 @@ const handleGoogleLogin = async () => {
           {errors.password && <p className="text-red-500 mt-1 text-sm">{errors.password.message}</p>}
         </div>
 
-        <button className="btn bg-gradient-to-r from-primary to-secondary w-full mt-4">Login</button>
+        <button className="btn bg-gradient-to-r from-primary to-secondary text-white w-full mt-4">Login</button>
 
         <div className="mt-4 text-sm text-center">
-          <p>Don’t have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a></p>
-        </div>
+         <p>
+  Don’t have an account?{" "}
+  <Link to="/register" className="text-blue-600 hover:underline">
+    Register
+  </Link>
+</p>
+    </div>
 
         {/* Social Login Buttons */}
         <SocialLogin onGoogleLogin={handleGoogleLogin} />

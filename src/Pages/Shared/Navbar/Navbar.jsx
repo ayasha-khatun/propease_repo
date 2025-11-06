@@ -1,5 +1,5 @@
 // src/components/Shared/Navbar.jsx
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 
@@ -73,8 +73,8 @@ const Navbar = () => {
           <div className="navbar h-16 flex justify-between items-center">
             {/* Logo */}
             <div className="navbar-start">
-              <Link to="/" className="text-3xl font-bold text-primary">
-                LOGO
+              <Link to="/" className="text-3xl font-bold">
+                <span className="text-primary">PROP</span><span className="text-secondary">EASE</span>
               </Link>
             </div>
 

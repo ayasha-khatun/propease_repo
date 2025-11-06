@@ -19,7 +19,6 @@ import ManageUsers from './../Pages/Dashboard/Admin/ManageUsers';
 import ManageProperties from './../Pages/Dashboard/Admin/ManageProperties';
 import ManageReviews from './../Pages/Dashboard/Admin/ManageReviews';
 import AdvertiseProperty from "../Pages/Dashboard/Admin/AdvertiseProperty";
-import AllProperties from "../Pages/AllProperty/AllProperties";
 import PropertyDetails from "../Pages/AllProperty/propertyDetails";
 
 import PrivateRoute from './../Routes/PrivateRoute';
@@ -30,6 +29,7 @@ import AdminOverview from './../Pages/Dashboard/Admin/AdminOverview';
 import AgentOverview from "../Pages/Dashboard/Agent/AgentOverview";
 import UserOverview from "../Pages/Dashboard/User/UserOverview";
 import Contact from "../Pages/Contact/Contact";
+import AllProperties from './../Pages/AllProperty/AllProperties';
 
 export const router = createBrowserRouter([
   {
