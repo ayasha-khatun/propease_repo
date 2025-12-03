@@ -1,5 +1,5 @@
 // src/components/Shared/Navbar.jsx
-import  { useState } from "react";
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 
@@ -18,8 +18,8 @@ const Navbar = () => {
           to="/"
           className={({ isActive }) =>
             isActive
-              ? "text-primary font-bold"
-              : "hover:text-primary transition-colors"
+              ? "text-primary font-bold dark:text-secondary"
+              : "hover:text-primary dark:hover:text-secondary transition-colors"
           }
         >
           Home
@@ -30,8 +30,8 @@ const Navbar = () => {
           to="/all-properties"
           className={({ isActive }) =>
             isActive
-              ? "text-primary font-bold"
-              : "hover:text-primary transition-colors"
+              ? "text-primary font-bold dark:text-secondary"
+              : "hover:text-primary dark:hover:text-secondary transition-colors"
           }
         >
           All Properties
@@ -42,8 +42,8 @@ const Navbar = () => {
           to="/contact"
           className={({ isActive }) =>
             isActive
-              ? "text-primary font-bold"
-              : "hover:text-primary transition-colors"
+              ? "text-primary font-bold dark:text-secondary"
+              : "hover:text-primary dark:hover:text-secondary transition-colors"
           }
         >
           Contact
@@ -55,8 +55,8 @@ const Navbar = () => {
             to="/dashboard"
             className={({ isActive }) =>
               isActive
-                ? "text-primary font-bold"
-                : "hover:text-primary transition-colors"
+                ? "text-primary font-bold dark:text-secondary"
+                : "hover:text-primary dark:hover:text-secondary transition-colors"
             }
           >
             Dashboard
@@ -68,19 +68,22 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+      <div className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-md z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4">
           <div className="navbar h-16 flex justify-between items-center">
             {/* Logo */}
             <div className="navbar-start">
               <Link to="/" className="text-3xl font-bold">
-                <span className="text-primary">PROP</span><span className="text-secondary">EASE</span>
+                <span className="text-primary">PROP</span>
+                <span className="text-secondary">EASE</span>
               </Link>
             </div>
 
             {/* Desktop Menu */}
             <div className="hidden lg:flex navbar-center">
-              <ul className="menu menu-horizontal space-x-4">{navItems}</ul>
+              <ul className="menu menu-horizontal space-x-4 text-gray-800 dark:text-gray-100">
+                {navItems}
+              </ul>
             </div>
 
             {/* Right Section */}
@@ -89,7 +92,7 @@ const Navbar = () => {
               <div className="lg:hidden">
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="px-3 py-1 rounded border bg-gray-200 text-black"
+                  className="px-3 py-1 rounded border bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-black"
                 >
                   ☰
                 </button>
@@ -105,7 +108,7 @@ const Navbar = () => {
                   />
                   <button
                     onClick={handleLogout}
-                    className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                    className="btn bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90"
                   >
                     Logout
                   </button>
@@ -113,7 +116,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="btn bg-gradient-to-r from-primary to-secondary text-white"
+                  className="btn bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90"
                 >
                   Login
                 </Link>
@@ -123,7 +126,7 @@ const Navbar = () => {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden mt-2 p-4 bg-gray-100 rounded">
+            <div className="lg:hidden mt-2 p-4 bg-gray-100 dark:bg-gray-800 rounded text-gray-800 dark:text-gray-100">
               <ul className="flex flex-col gap-3">{navItems}</ul>
             </div>
           )}

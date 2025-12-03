@@ -8,34 +8,35 @@ const DashboardLayout = () => {
   const axiosSecure = useAxiosSecure();
   const [role, setRole] = useState(null); // null = loading
 
-  // ✅ Fetch user role
-  useEffect(() => {
-    if (!user?.email) return; // stop if not logged in
+  // Fetch user role
+ useEffect(() => {
+  if (!user?.email) return;
 
-    const fetchRole = async () => {
-      try {
-        const res = await axiosSecure.get(`/users/role/${user.email}`);
-        setRole(res.data?.role || "user"); // default fallback
-      } catch (err) {
-        console.error("Role fetch error:", err);
-        setRole("user"); // fallback if error
-      }
-    };
-
-    fetchRole();
-  }, [user?.email, axiosSecure]);
-
-  // ✅ Logout handler
-  const handleLogout = async () => {
+  const fetchRole = async () => {
     try {
-      await logout();
-      console.log("Logged out");
-    } catch (error) {
-      console.error(error);
+      const res = await axiosSecure.get(`/users/role/${user.email}`);
+      setRole(res.data?.role); // no default yet
+    } catch (err) {
+      console.error("Role fetch error:", err);
+      setRole(null); // maybe redirect to login
     }
   };
 
-  // ✅ Show loading spinner until role is determined
+  fetchRole();
+}, [user?.email, axiosSecure]);
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await logout();
+      localStorage.removeItem("access-token"); // clear token on logout
+      console.log("Logged out");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Show spinner while loading role
   if (role === null) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -48,7 +49,7 @@ const DashboardLayout = () => {
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
-        {/* Top Navbar (for mobile) */}
+        {/* Top Navbar for mobile */}
         <div className="w-full navbar bg-base-200 lg:hidden">
           <div className="flex-none">
             <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
@@ -86,7 +87,7 @@ const DashboardLayout = () => {
           {/* User Menu */}
           {role === "user" && (
             <>
-            <li>
+              <li>
                 <NavLink to="/dashboard/user/dashboard">User Dashboard</NavLink>
               </li>
               <li>
@@ -96,9 +97,7 @@ const DashboardLayout = () => {
                 <NavLink to="/dashboard/user/wishlist">Wishlist</NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/user/property-bought">
-                  Property Bought
-                </NavLink>
+                <NavLink to="/dashboard/user/property-bought">Property Bought</NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/user/my-reviews">My Reviews</NavLink>
@@ -109,25 +108,20 @@ const DashboardLayout = () => {
           {/* Agent Menu */}
           {role === "agent" && (
             <>
-             <li>
+              <li>
                 <NavLink to="/dashboard/agent/dashboard">Agent Dashboard</NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/agent/profile">Agent Profile</NavLink>
               </li>
-             
               <li>
                 <NavLink to="/dashboard/agent/add-property">Add Property</NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/agent/my-properties">
-                  My Added Properties
-                </NavLink>
+                <NavLink to="/dashboard/agent/my-properties">My Added Properties</NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/agent/sold-properties">
-                  My Sold Properties
-                </NavLink>
+                <NavLink to="/dashboard/agent/sold-properties">My Sold Properties</NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/agent/requests">Requested Properties</NavLink>
@@ -138,20 +132,17 @@ const DashboardLayout = () => {
           {/* Admin Menu */}
           {role === "admin" && (
             <>
-            <li>
+              <li>
                 <NavLink to="/dashboard/admin/dashboard">Admin Dashboard</NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/admin/profile">Admin Profile</NavLink>
               </li>
-              
               <li>
                 <NavLink to="/dashboard/admin/manage-users">Manage Users</NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/admin/manage-properties">
-                  Manage Properties
-                </NavLink>
+                <NavLink to="/dashboard/admin/manage-properties">Manage Properties</NavLink>
               </li>
               <li>
                 <NavLink to="/dashboard/admin/manage-reviews">Manage Reviews</NavLink>

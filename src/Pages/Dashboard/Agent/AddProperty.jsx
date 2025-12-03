@@ -14,7 +14,6 @@ const AddProperty = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // 👇 Replace with your image upload logic (Cloudinary / imgbb / etc.)
       const imageUrl =
         'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2';
 
@@ -22,17 +21,14 @@ const AddProperty = () => {
         title: data.title,
         location: data.location,
         image: imageUrl,
-        priceRange: `${data.minPrice} - ${data.maxPrice}`, // ✅ Fixed
+        priceRange: `${data.minPrice} - ${data.maxPrice}`,
         agentName: user?.displayName || 'Unknown Agent',
         agentEmail: user?.email || 'unknown@example.com',
-        status: 'pending',
+        verificationStatus: 'pending',
         timestamp: new Date(),
       };
 
-      console.log('Submitting property:', newProperty);
-
       const res = await axiosSecure.post('/properties', newProperty);
-      console.log('Backend response:', res.data);
 
       if (res.data.insertedId) {
         Swal.fire('✅ Success', 'Property added successfully!', 'success');
@@ -59,28 +55,48 @@ const AddProperty = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
-      <h2 className="text-3xl font-bold text-center mb-6">Add New Property</h2>
+    <div className="
+      max-w-3xl mx-auto 
+      bg-white dark:bg-slate-800 
+      text-gray-900 dark:text-gray-200 
+      p-6 rounded-lg shadow-md mt-10
+    ">
+      <h2 className="text-3xl font-bold text-center mb-6">
+        Add New Property
+      </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        
         {/* Property Title */}
         <div>
-          <label className="block font-medium mb-1">Property Title</label>
+          <label className="block font-medium mb-1">
+            Property Title
+          </label>
           <input
             type="text"
             {...register('title', { required: true })}
-            className="input input-bordered w-full"
+            className="
+              input input-bordered w-full 
+              bg-white dark:bg-slate-700 
+              text-gray-900 dark:text-gray-200
+            "
             placeholder="Enter property title"
           />
         </div>
 
         {/* Location */}
         <div>
-          <label className="block font-medium mb-1">Location</label>
+          <label className="block font-medium mb-1">
+            Location
+          </label>
           <input
             type="text"
             {...register('location', { required: true })}
-            className="input input-bordered w-full"
+            className="
+              input input-bordered w-full 
+              bg-white dark:bg-slate-700 
+              text-gray-900 dark:text-gray-200
+            "
             placeholder="Enter location"
           />
         </div>
@@ -88,21 +104,33 @@ const AddProperty = () => {
         {/* Price Range */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium mb-1">Min Price ($)</label>
+            <label className="block font-medium mb-1">
+              Min Price ($)
+            </label>
             <input
               type="number"
               {...register('minPrice', { required: true, valueAsNumber: true })}
-              className="input input-bordered w-full"
+              className="
+                input input-bordered w-full 
+                bg-white dark:bg-slate-700 
+                text-gray-900 dark:text-gray-200
+              "
               placeholder="Enter minimum price"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Max Price ($)</label>
+            <label className="block font-medium mb-1">
+              Max Price ($)
+            </label>
             <input
               type="number"
               {...register('maxPrice', { required: true, valueAsNumber: true })}
-              className="input input-bordered w-full"
+              className="
+                input input-bordered w-full 
+                bg-white dark:bg-slate-700 
+                text-gray-900 dark:text-gray-200
+              "
               placeholder="Enter maximum price"
             />
           </div>
@@ -110,12 +138,18 @@ const AddProperty = () => {
 
         {/* Image Upload */}
         <div>
-          <label className="block font-medium mb-1">Upload Image</label>
+          <label className="block font-medium mb-1">
+            Upload Image
+          </label>
           <input
             type="file"
             {...register('image', { required: true })}
             accept="image/*"
-            className="file-input file-input-bordered w-full"
+            className="
+              file-input file-input-bordered w-full 
+              bg-white dark:bg-slate-700 
+              text-gray-900 dark:text-gray-200
+            "
             onChange={handleImageChange}
           />
         </div>
@@ -135,7 +169,11 @@ const AddProperty = () => {
             <input
               type="text"
               value={user?.displayName || ''}
-              className="input input-bordered w-full bg-gray-100"
+              className="
+                input input-bordered w-full 
+                bg-gray-100 dark:bg-slate-700 
+                text-gray-800 dark:text-gray-200
+              "
               readOnly
               disabled
             />
@@ -146,7 +184,11 @@ const AddProperty = () => {
             <input
               type="email"
               value={user?.email || ''}
-              className="input input-bordered w-full bg-gray-100"
+              className="
+                input input-bordered w-full 
+                bg-gray-100 dark:bg-slate-700 
+                text-gray-800 dark:text-gray-200
+              "
               readOnly
               disabled
             />
@@ -154,13 +196,22 @@ const AddProperty = () => {
         </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          className="btn text-white bg-gradient-to-r from-primary to-secondary w-full mt-6"
-          disabled={loading}
-        >
-          {loading ? 'Adding...' : 'Add Property'}
-        </button>
+        <div className="text-center pt-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className={`
+              btn w-full text-white font-semibold border-0 
+              bg-blue-600 hover:bg-blue-700 
+              dark:bg-blue-500 dark:hover:bg-blue-600 
+              transition-all duration-300
+              ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            {loading ? 'Adding Property...' : 'Add Property'}
+          </button>
+        </div>
+
       </form>
     </div>
   );

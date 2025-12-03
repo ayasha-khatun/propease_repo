@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
@@ -80,7 +79,7 @@ const UserOverview = () => {
   }, [user?.email, axiosSecure]);
 
   if (loading) {
-    return <p className="text-center mt-10 text-lg animate-pulse">Loading overview...</p>;
+    return <p className="text-center mt-10 text-lg animate-pulse dark:text-gray-300">Loading overview...</p>;
   }
 
   const cards = [
@@ -92,14 +91,12 @@ const UserOverview = () => {
     { title: "Bought Properties", value: stats.boughtProperties, icon: <FaHome size={30} className="text-indigo-500" /> },
   ];
 
-  // ✅ PIE DATA (Offers Breakdown)
   const pieData = [
     { name: "Pending", value: stats.pendingOffers },
     { name: "Accepted", value: stats.acceptedOffers },
     { name: "Bought", value: stats.boughtProperties },
   ];
 
-  // ✅ BAR DATA (General Comparison)
   const barData = [
     { name: "Wishlist", value: stats.wishlist },
     { name: "Reviews", value: stats.reviews },
@@ -107,23 +104,30 @@ const UserOverview = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-12">
+    <div className="max-w-6xl mx-auto p-6 space-y-12 text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-slate-900">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center justify-center transform hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+            className="
+              bg-white dark:bg-slate-800 
+              shadow-lg dark:shadow-gray-700
+              rounded-xl p-6 flex flex-col items-center justify-center
+              transform hover:-translate-y-1 hover:shadow-2xl 
+              transition-all duration-300
+              border border-gray-200 dark:border-gray-700
+            "
           >
             <div className="mb-4">{card.icon}</div>
-            <h3 className="text-gray-500 text-sm mb-2">{card.title}</h3>
-            <p className="text-3xl font-extrabold text-gray-800">{card.value}</p>
+            <h3 className="text-sm mb-2 text-gray-500 dark:text-gray-400">{card.title}</h3>
+            <p className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">{card.value}</p>
           </div>
         ))}
       </div>
 
       {/* PIE CHART - Offers Breakdown */}
-      <div className="bg-white p-6 rounded-xl shadow-lg">
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg dark:shadow-gray-700 border border-gray-200 dark:border-gray-700">
         <h3 className="text-center text-xl font-bold mb-4">Offers Status Breakdown</h3>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
@@ -148,13 +152,13 @@ const UserOverview = () => {
       </div>
 
       {/* BAR CHART - General User Activity */}
-      <div className="bg-white p-6 rounded-xl shadow-lg">
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-lg dark:shadow-gray-700 border border-gray-200 dark:border-gray-700">
         <h3 className="text-center text-xl font-bold mb-4">User Activity Overview</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
+            <XAxis dataKey="name" stroke="#334155" />
+            <YAxis allowDecimals={false} stroke="#334155" />
             <Tooltip />
             <Legend />
             <Bar dataKey="value" fill="#3B82F6" />

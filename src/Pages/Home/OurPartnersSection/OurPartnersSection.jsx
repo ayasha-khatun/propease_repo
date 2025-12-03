@@ -10,10 +10,12 @@ const partners = [
 
 const OurPartnersSection = () => {
   return (
-    <section className="w-full bg-gray-50 py-16">
+    <section className="w-full bg-gray-50 dark:bg-gray-900 py-16 transition-colors duration-300">
       <div className="max-w-7xl mx-auto text-center px-4">
-        <h2 className="text-4xl font-bold mb-4">Our Trusted Partners</h2>
-        <p className="text-gray-600 mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          Our Trusted Partners
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-10">
           We collaborate with leading companies to bring you the best real estate services.
         </p>
 
@@ -21,12 +23,12 @@ const OurPartnersSection = () => {
           {partners.map((partner) => (
             <div
               key={partner.id}
-              className="flex justify-center items-center p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"
+              className="flex justify-center items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300"
             >
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="h-12 object-contain opacity-80 hover:opacity-100 transition-opacity duration-300"
+                className="h-12 object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 dark:invert-[0.85]"
               />
             </div>
           ))}

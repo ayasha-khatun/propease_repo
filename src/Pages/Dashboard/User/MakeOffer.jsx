@@ -166,7 +166,7 @@ const MakeOffer = () => {
         />
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-primary to-secondary text-white py-2 rounded"
+          className="w-full bg-blue-600 text-white py-2 rounded"
         >
           Submit Offer
         </button>

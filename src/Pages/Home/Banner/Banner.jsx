@@ -60,12 +60,12 @@ const BannerSlider = () => {
                   <p className="text-gray-100 text-base md:text-xl mb-6 drop-shadow-[0_3px_8px_rgba(0,0,0,0.8)]">
                     {banner.subtitle}
                   </p>
-                  <div className="flex justify-center gap-4">
+                  {/* <div className="flex justify-center gap-4">
                     <button className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-full hover:from-purple-600 hover:to-indigo-500 transition duration-300 shadow-lg">
                       Explore Now
                     </button>
                     
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </SwiperSlide>

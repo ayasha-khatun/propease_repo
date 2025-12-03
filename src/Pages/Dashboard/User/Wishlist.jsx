@@ -1,4 +1,3 @@
-// src/pages/Dashboard/Wishlist.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -53,12 +52,12 @@ const Wishlist = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-10 text-lg font-medium">Loading...</div>;
+    return <div className="text-center py-10 text-lg font-medium dark:text-gray-300">Loading...</div>;
   }
 
   if (wishlist.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-10 text-gray-800 dark:text-gray-200">
         <h2 className="text-xl font-semibold mb-4">Your wishlist is empty</h2>
         <Link to="/all-properties" className="btn btn-primary">
           Explore Properties
@@ -70,7 +69,10 @@ const Wishlist = () => {
   return (
     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {wishlist.map((property) => (
-        <div key={property._id} className="bg-white rounded-lg shadow-md p-4">
+        <div
+          key={property._id}
+          className="bg-white dark:bg-slate-800 rounded-lg shadow-md dark:shadow-gray-700 p-4 border border-gray-200 dark:border-gray-700"
+        >
           {/* 🖼️ Property Image */}
           <img
             src={property.image}
@@ -79,19 +81,19 @@ const Wishlist = () => {
           />
 
           {/* 📌 Title */}
-          <h2 className="text-xl font-bold mt-2">{property.title}</h2>
+          <h2 className="text-xl font-bold mt-2 text-gray-800 dark:text-gray-100">{property.title}</h2>
 
           {/* 📍 Location */}
-          <p className="text-gray-600 mt-1">Location: {property.location}</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Location: {property.location}</p>
 
           {/* 👨 Agent Info */}
           <div className="flex items-center gap-2 mt-2">
             <img
               src={property.agentPhoto || "/default-user.png"}
               alt={property.agentName}
-              className="w-8 h-8 rounded-full object-cover border"
+              className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600"
             />
-            <p className="font-medium">Agent: {property.agentName}</p>
+            <p className="font-medium text-gray-800 dark:text-gray-100">Agent: {property.agentName}</p>
           </div>
 
           {/* ✅ Verification Status */}
@@ -100,10 +102,10 @@ const Wishlist = () => {
             <span
               className={`font-semibold ${
                 property.verificationStatus === "verified"
-                  ? "text-green-600"
+                  ? "text-green-600 dark:text-green-400"
                   : property.verificationStatus === "pending"
-                  ? "text-yellow-600"
-                  : "text-red-500"
+                  ? "text-yellow-600 dark:text-yellow-400"
+                  : "text-red-500 dark:text-red-400"
               }`}
             >
               {property.verificationStatus}
@@ -111,19 +113,19 @@ const Wishlist = () => {
           </p>
 
           {/* 💰 Price Range */}
-          <p className="text-green-600 mt-1">Price Range: {property.priceRange}</p>
+          <p className="text-green-600 dark:text-green-400 mt-1">Price Range: {property.priceRange}</p>
 
           {/* 🔘 Buttons */}
           <div className="flex gap-2 mt-4">
             <Link
               to={`/dashboard/make-offer/${property.propertyId}`}
-              className="btn text-white bg-gradient-to-r from-primary to-secondary flex-1"
+              className="btn text-white bg-blue-600 dark:bg-blue-500 flex-1 hover:bg-blue-700 dark:hover:bg-blue-600"
             >
               Make Offer
             </Link>
             <button
               onClick={() => handleDelete(property._id)}
-              className="btn text-white bg-gradient-to-r from-primary to-secondary flex-1"
+              className="btn text-white bg-red-500 dark:bg-red-600 flex-1 hover:bg-red-600 dark:hover:bg-red-500"
             >
               Remove
             </button>

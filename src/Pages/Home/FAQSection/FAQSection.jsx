@@ -32,41 +32,39 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFAQ = (index) => {
-    if (openIndex === index) {
-      setOpenIndex(null);
-    } else {
-      setOpenIndex(index);
-    }
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section className="w-full bg-gray-50 py-16">
+    <section className="w-full bg-gray-50 dark:bg-gray-900 py-16 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-10">
-          Frequently Asked Questions
+        <h2 className="text-4xl font-bold text-center mb-10 text-gray-900 dark:text-gray-100">
+          ❓ Frequently Asked Questions
         </h2>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg shadow-sm"
+              className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all"
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center px-6 py-4 text-left text-lg font-medium focus:outline-none"
+                className="w-full flex justify-between items-center px-6 py-4 text-left text-lg font-medium text-gray-900 dark:text-gray-100 focus:outline-none"
               >
                 {faq.question}
                 <span className="text-2xl">
-                  {openIndex === index ? "-" : "+"}
+                  {openIndex === index ? "−" : "+"}
                 </span>
               </button>
 
-              {openIndex === index && (
-                <div className="px-6 pb-4 text-gray-600">
-                  {faq.answer}
-                </div>
-              )}
+              <div
+                className={`px-6 pb-4 text-gray-700 dark:text-gray-300 overflow-hidden transition-all duration-300 ${
+                  openIndex === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                }`}
+              >
+                {faq.answer}
+              </div>
             </div>
           ))}
         </div>
