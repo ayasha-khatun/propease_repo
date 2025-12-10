@@ -46,7 +46,7 @@ const DashboardLayout = () => {
   }
 
   return (
-    <div className="drawer lg:drawer-open">
+    <div className="drawer max-w-7xl lg:drawer-open">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         {/* Top Navbar for mobile */}

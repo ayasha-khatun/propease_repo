@@ -11,7 +11,7 @@ import FAQSection from '../FAQSection/FAQSection';
 
 const Home = () => {
     return (
-        <div className='mt-10'>
+        <div>
             <Banner></Banner>
             <AdvertisementSection></AdvertisementSection>
             <AboutUsSection></AboutUsSection>

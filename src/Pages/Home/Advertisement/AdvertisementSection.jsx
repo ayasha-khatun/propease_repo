@@ -17,14 +17,14 @@ const AdvertisementSection = () => {
   }, []);
 
   return (
-    <div className="w-full py-16 bg-gray-50">
-      <h2 className="text-4xl font-bold text-center mb-10 text-gray-800">
+    <div className="w-full py-16 bg-gray-50 dark:bg-gray-900">
+      <h2 className="text-4xl font-bold text-center mb-10 text-gray-800 dark:text-white">
         Advertised Properties
       </h2>
 
       <div className="max-w-7xl mx-auto px-4">
         {ads.length === 0 ? (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-gray-500 dark:text-gray-300">
             No advertised properties available.
           </p>
         ) : (
@@ -32,7 +32,7 @@ const AdvertisementSection = () => {
             {ads.map((property) => (
               <div
                 key={property._id}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col transition-transform transform hover:-translate-y-2 hover:shadow-2xl duration-300"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col transition-transform transform hover:-translate-y-2 hover:shadow-2xl duration-300"
               >
                 <img
                   src={property.image || '/no-image.jpg'}
@@ -41,17 +41,16 @@ const AdvertisementSection = () => {
                 />
 
                 <div className="p-5 flex flex-col flex-grow">
-                  <h3 className="text-xl font-semibold mb-1 text-gray-900">
+                  <h3 className="text-xl font-semibold mb-1 text-gray-900 dark:text-white">
                     {property.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                     {property.location}
                   </p>
-                  <p className="text-sm text-gray-700 font-medium mb-3">
+                  <p className="text-sm text-gray-700 dark:text-gray-200 font-medium mb-3">
                     {property.priceRange}
                   </p>
 
-                  {/* Spacer to push button to bottom */}
                   <div className="flex-grow"></div>
 
                   <Link

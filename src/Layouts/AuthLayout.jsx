@@ -5,7 +5,7 @@ import authImg from '../assets/authImg.png'
 
 const AuthLayout = () => {
     return (
-        <div className="p-12 bg-black min-h-screen">
+        <div className="p-12 bg-black min-h-screen max-w-7xl">
             <div>
                 <Link to="/" className="text-3xl font-bold">
                     <span className="text-primary">PROP</span><span className="text-secondary">EASE</span>
