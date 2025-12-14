@@ -42,7 +42,7 @@ const useAxiosSecure = () => {
     };
   }, [navigate]);
 
-  return axiosSecureInstance; // return fixed instance
+  return axiosSecureInstance; 
 };
 
 export default useAxiosSecure;
