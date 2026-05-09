@@ -6,7 +6,8 @@ import useAxiosSecure from "../hooks/useAxiosSecure";
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const [role, setRole] = useState(null); // null = loading
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Fetch user role
  useEffect(() => {
@@ -15,16 +16,25 @@ const DashboardLayout = () => {
   const fetchRole = async () => {
     try {
       const res = await axiosSecure.get(`/users/role/${user.email}`);
-      setRole(res.data?.role); // no default yet
+      setRole(res.data?.role || "user");
     } catch (err) {
-      console.error("Role fetch error:", err);
-      setRole(null); // maybe redirect to login
+      console.error(err);
+      setRole("user"); 
+    } finally {
+      setLoading(false);
     }
   };
 
   fetchRole();
 }, [user?.email, axiosSecure]);
 
+if (loading) {
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
+  );
+}
   // Logout handler
   const handleLogout = async () => {
     try {

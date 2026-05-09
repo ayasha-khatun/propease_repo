@@ -1,29 +1,26 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import useAuth from './useAuth';
+import useAxiosSecure from './useAxiosSecure';
 
 const useRole = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.email) {
-      axios
-        .get(`https://propease-server-side.vercel.app/users/${user.email}`)
-        .then((res) => {
+      axiosSecure
+        .get(`/users/role/${user.email}`)
+        .then(res => {
           setRole(res.data.role);
-          setLoading(false);
         })
         .catch(() => {
-          setRole('user'); // default role if error
-          setLoading(false);
-        });
-    } else {
-      setRole(null);
-      setLoading(false);
+          setRole("user");
+        })
+        .finally(() => setLoading(false));
     }
-  }, [user]);
+  }, [user, axiosSecure]);
 
   return { role, loading };
 };

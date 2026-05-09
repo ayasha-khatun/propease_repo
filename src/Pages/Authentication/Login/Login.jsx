@@ -38,7 +38,7 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       await signIn(data.email, data.password);
-      const token = await getJwtToken(data.email);
+      await getJwtToken(data.email);
 
       Swal.fire({
         icon: "success",

@@ -26,7 +26,6 @@ const banners = [
     subtitle: 'Manage listings, users, and reports with full authority.',
   },
 ];
-
 const BannerSlider = () => {
   return (
     <section className="max-w-7xl mx-auto overflow-hidden">

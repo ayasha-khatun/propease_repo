@@ -42,8 +42,6 @@ const AgentOverview = () => {
 
   const [loading, setLoading] = useState(true);
   const [soldOffers, setSoldOffers] = useState([]);
-  const [offersList, setOffersList] = useState([]);
-  const [propertiesList, setPropertiesList] = useState([]);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -53,7 +51,6 @@ const AgentOverview = () => {
 
         const propRes = await axiosSecure.get(`/properties/agent/${user.email}`);
         const properties = propRes.data || [];
-        setPropertiesList(properties);
 
         const soldRes = await axiosSecure.get(`/offers/sold/${user.email}`);
         const sold = soldRes.data || [];
@@ -61,7 +58,6 @@ const AgentOverview = () => {
 
         const offersRes = await axiosSecure.get(`/offers/agent/${user.email}`);
         const offers = offersRes.data || [];
-        setOffersList(offers);
 
         const totalProperties = properties.length;
         const verifiedProperties = properties.filter(

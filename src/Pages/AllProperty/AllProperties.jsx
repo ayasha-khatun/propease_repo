@@ -100,8 +100,8 @@ className="input input-bordered w-full sm:w-1/2 bg-white dark:bg-gray-800 dark:t
   ) : (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredProperties.map((property) => {
-        const [minPrice, maxPrice] = property.priceRange
-          ?.split("-")
+        const [minPrice, maxPrice] = (property.priceRange || "0-0")
+          .split("-")
           .map((p) => p.trim());
 
         return (

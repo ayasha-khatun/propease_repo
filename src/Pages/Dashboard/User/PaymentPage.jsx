@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import useAuth from "../../../hooks/useAuth";
 
 const PaymentPage = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
-  const { user } = useAuth();
   const [offer, setOffer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -19,7 +17,7 @@ const PaymentPage = () => {
         setOffer(res.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError("Failed to load offer details.");
         setLoading(false);
       });
