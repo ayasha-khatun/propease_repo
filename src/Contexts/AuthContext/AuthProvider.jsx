@@ -54,7 +54,24 @@ const AuthProvider = ({ children }) => {
   const signInWithGoogle = async () => {
     setLoading(true);
     const result = await signInWithPopup(auth, googleProvider);
-    const email = result.user.email;
+    const { email, displayName, photoURL } = result.user;
+
+    // Save user to MongoDB if not exists
+    try {
+      await fetch(`https://propease-server-side.vercel.app/users/${email}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: displayName,
+          email,
+          photo: photoURL,
+          role: 'user',
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save Google user to DB:', err);
+    }
+
     await getJwtAndStore(email);
     return result;
   };
