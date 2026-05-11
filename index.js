@@ -349,9 +349,15 @@ async function run() {
 
     app.get("/verified-properties", async (req, res) => {
       try {
-        const properties = await propertiesCollection
-          .find({ verificationStatus: "verified" })
-          .toArray();
+        const { location } = req.query;
+        const query = { verificationStatus: "verified" };
+
+        // location query থাকলে case-insensitive regex দিয়ে filter করো
+        if (location) {
+          query.location = { $regex: location, $options: "i" };
+        }
+
+        const properties = await propertiesCollection.find(query).toArray();
         const enrichedProperties = await Promise.all(
           properties.map(async (property) => {
             try {
