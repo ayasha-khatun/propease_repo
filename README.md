@@ -1,4 +1,7 @@
 🏠 Propease - Real Estate Platform
+
+![CI/CD Pipeline](https://github.com/ayasha-khatun/propease_repo/actions/workflows/ci-cd.yml/badge.svg)
+
 Propease is a comprehensive real estate platform built with the MERN stack that connects property buyers, real estate agents, and administrators in a seamless digital marketplace.
 
 🔑 Admin Access
