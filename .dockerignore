@@ -1,0 +1,8 @@
+node_modules
+dist
+.env.local
+.firebase
+.git
+.gitignore
+README.md
+pglite-debug.log
